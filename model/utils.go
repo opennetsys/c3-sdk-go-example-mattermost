@@ -4,13 +4,15 @@
 package model
 
 import (
-	"bytes"
-	"crypto/rand"
+	"crypto/sha512"
 	"encoding/base32"
+	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"net/mail"
@@ -20,11 +22,9 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-	"time"
 	"unicode"
 
 	goi18n "github.com/nicksnyder/go-i18n/i18n"
-	"github.com/pborman/uuid"
 )
 
 const (
@@ -119,33 +119,31 @@ func NewAppError(where string, id string, params map[string]interface{}, details
 }
 
 var encoding = base32.NewEncoding("ybndrfg8ejkmcpqxot1uwisza345h769")
+var SeqUint64 uint64 = 0
 
 // NewId is a globally unique identifier.  It is a [A-Z0-9] string 26
 // characters long.  It is a UUID version 4 Guid that is zbased32 encoded
 // with the padding stripped off.
 func NewId() string {
-	var b bytes.Buffer
-	encoder := base32.NewEncoder(encoding, &b)
-	encoder.Write(uuid.NewRandom())
-	encoder.Close()
-	b.Truncate(26) // removes the '==' padding
-	return b.String()
+	return NewRandomString(26)
 }
 
 func NewRandomString(length int) string {
-	var b bytes.Buffer
-	str := make([]byte, length+8)
-	rand.Read(str)
-	encoder := base32.NewEncoder(encoding, &b)
-	encoder.Write(str)
-	encoder.Close()
-	b.Truncate(length) // removes the '==' padding
-	return b.String()
+	SeqUint64++
+	bs := make([]byte, 64)
+	binary.LittleEndian.PutUint64(bs, SeqUint64)
+	b := sha512.Sum512_256(bs)
+	str := hex.EncodeToString(b[:])
+
+	log.Printf("SeqUint64: %d", SeqUint64)
+	return str[:length]
 }
 
 // GetMillis is a convience method to get milliseconds since epoch.
 func GetMillis() int64 {
-	return time.Now().UnixNano() / int64(time.Millisecond)
+	SeqUint64++
+	log.Printf("SeqUint64: %d", SeqUint64)
+	return SeqUint64
 }
 
 func CopyStringMap(originalMap map[string]string) map[string]string {
