@@ -255,13 +255,13 @@ func (o *Post) SanitizeProps() {
 
 func (o *Post) PreSave() {
 	if o.Id == "" {
-		o.Id = NewId()
+		o.Id = NewIdForPresave()
 	}
 
 	o.OriginalId = ""
 
 	if o.CreateAt == 0 {
-		o.CreateAt = GetMillis()
+		o.CreateAt = GetMillisForPresave()
 	}
 
 	o.UpdateAt = o.CreateAt
@@ -424,7 +424,7 @@ func (o *Post) GenerateActionIds() {
 		for _, attachment := range attachments {
 			for _, action := range attachment.Actions {
 				if action.Id == "" {
-					action.Id = NewId()
+					action.Id = NewIdForPresave()
 				}
 			}
 		}

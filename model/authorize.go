@@ -107,7 +107,7 @@ func (ad *AuthData) PreSave() {
 	}
 
 	if ad.CreateAt == 0 {
-		ad.CreateAt = GetMillis()
+		ad.CreateAt = GetMillisForPresave()
 	}
 
 	if len(ad.Scope) == 0 {

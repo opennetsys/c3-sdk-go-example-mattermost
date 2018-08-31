@@ -28,11 +28,11 @@ type ClusterDiscovery struct {
 
 func (o *ClusterDiscovery) PreSave() {
 	if o.Id == "" {
-		o.Id = NewId()
+		o.Id = NewIdForPresave()
 	}
 
 	if o.CreateAt == 0 {
-		o.CreateAt = GetMillis()
+		o.CreateAt = GetMillisForPresave()
 		o.LastPingAt = o.CreateAt
 	}
 }

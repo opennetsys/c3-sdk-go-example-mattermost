@@ -68,11 +68,11 @@ func FileInfosFromJson(data io.Reader) []*FileInfo {
 
 func (o *FileInfo) PreSave() {
 	if o.Id == "" {
-		o.Id = NewId()
+		o.Id = NewIdForPresave()
 	}
 
 	if o.CreateAt == 0 {
-		o.CreateAt = GetMillis()
+		o.CreateAt = GetMillisForPresave()
 	}
 
 	if o.UpdateAt < o.CreateAt {

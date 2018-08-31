@@ -44,7 +44,7 @@ func (o *Compliance) ToJson() string {
 
 func (me *Compliance) PreSave() {
 	if me.Id == "" {
-		me.Id = NewId()
+		me.Id = NewIdForPresave()
 	}
 
 	if me.Status == "" {
@@ -55,7 +55,7 @@ func (me *Compliance) PreSave() {
 	me.Emails = NormalizeEmail(me.Emails)
 	me.Keywords = strings.ToLower(me.Keywords)
 
-	me.CreateAt = GetMillis()
+	me.CreateAt = GetMillisForPresave()
 }
 
 func (me *Compliance) JobName() string {

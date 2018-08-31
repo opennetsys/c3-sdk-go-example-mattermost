@@ -196,19 +196,19 @@ func (o *OutgoingWebhook) IsValid() *AppError {
 
 func (o *OutgoingWebhook) PreSave() {
 	if o.Id == "" {
-		o.Id = NewId()
+		o.Id = NewIdForPresave()
 	}
 
 	if o.Token == "" {
-		o.Token = NewId()
+		o.Token = NewIdForPresave()
 	}
 
-	o.CreateAt = GetMillis()
+	o.CreateAt = GetMillisForPresave()
 	o.UpdateAt = o.CreateAt
 }
 
 func (o *OutgoingWebhook) PreUpdate() {
-	o.UpdateAt = GetMillis()
+	o.UpdateAt = GetMillisForPresave()
 }
 
 func (o *OutgoingWebhook) TriggerWordExactMatch(word string) bool {

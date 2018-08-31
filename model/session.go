@@ -68,14 +68,14 @@ func SessionFromJson(data io.Reader) *Session {
 
 func (me *Session) PreSave() {
 	if me.Id == "" {
-		me.Id = NewId()
+		me.Id = NewIdForPresave()
 	}
 
 	if me.Token == "" {
-		me.Token = NewId()
+		me.Token = NewIdForPresave()
 	}
 
-	me.CreateAt = GetMillis()
+	me.CreateAt = GetMillisForPresave()
 	me.LastActivityAt = me.CreateAt
 
 	if me.Props == nil {

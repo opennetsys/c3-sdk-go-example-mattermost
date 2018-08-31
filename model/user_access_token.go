@@ -38,7 +38,7 @@ func (t *UserAccessToken) IsValid() *AppError {
 }
 
 func (t *UserAccessToken) PreSave() {
-	t.Id = NewId()
+	t.Id = NewIdForPresave()
 	t.IsActive = true
 }
 

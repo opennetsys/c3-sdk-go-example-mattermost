@@ -58,10 +58,10 @@ func IsValidEmojiName(name string) *AppError {
 
 func (emoji *Emoji) PreSave() {
 	if emoji.Id == "" {
-		emoji.Id = NewId()
+		emoji.Id = NewIdForPresave()
 	}
 
-	emoji.CreateAt = GetMillis()
+	emoji.CreateAt = GetMillisForPresave()
 	emoji.UpdateAt = emoji.CreateAt
 }
 

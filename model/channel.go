@@ -130,16 +130,16 @@ func (o *Channel) IsValid() *AppError {
 
 func (o *Channel) PreSave() {
 	if o.Id == "" {
-		o.Id = NewId()
+		o.Id = NewIdForPresave()
 	}
 
-	o.CreateAt = GetMillis()
+	o.CreateAt = GetMillisForPresave()
 	o.UpdateAt = o.CreateAt
 	o.ExtraUpdateAt = 0
 }
 
 func (o *Channel) PreUpdate() {
-	o.UpdateAt = GetMillis()
+	o.UpdateAt = GetMillisForPresave()
 }
 
 func (o *Channel) IsGroupOrDirect() bool {

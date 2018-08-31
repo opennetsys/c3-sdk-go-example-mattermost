@@ -170,19 +170,19 @@ func (o *Team) IsValid() *AppError {
 
 func (o *Team) PreSave() {
 	if o.Id == "" {
-		o.Id = NewId()
+		o.Id = NewIdForPresave()
 	}
 
-	o.CreateAt = GetMillis()
+	o.CreateAt = GetMillisForPresave()
 	o.UpdateAt = o.CreateAt
 
 	if len(o.InviteId) == 0 {
-		o.InviteId = NewId()
+		o.InviteId = NewIdForPresave()
 	}
 }
 
 func (o *Team) PreUpdate() {
-	o.UpdateAt = GetMillis()
+	o.UpdateAt = GetMillisForPresave()
 }
 
 func IsReservedTeamName(s string) bool {

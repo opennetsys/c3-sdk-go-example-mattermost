@@ -71,6 +71,6 @@ func (o *Reaction) IsValid() *AppError {
 
 func (o *Reaction) PreSave() {
 	if o.CreateAt == 0 {
-		o.CreateAt = GetMillis()
+		o.CreateAt = GetMillisForPresave()
 	}
 }

@@ -146,6 +146,34 @@ func GetMillis() int64 {
 	return SeqUint64
 }
 
+var SeqUint64ForPresave uint64 = 0
+var SeqUint64ForPresaveMillis uint64 = 0
+
+// NewId is a globally unique identifier.  It is a [A-Z0-9] string 26
+// characters long.  It is a UUID version 4 Guid that is zbased32 encoded
+// with the padding stripped off.
+func NewIdForPresave() string {
+	return NewRandomStringForPresave(26)
+}
+
+func NewRandomStringForPresave(length int) string {
+	SeqUint64ForPresave++
+	bs := make([]byte, 64)
+	binary.LittleEndian.PutUint64(bs, SeqUint64ForPresave)
+	b := sha512.Sum512_256(bs)
+	str := hex.EncodeToString(b[:])
+
+	log.Printf("SeqUint64: %d", SeqUint64ForPresave)
+	return str[:length]
+}
+
+// GetMillis is a convience method to get milliseconds since epoch.
+func GetMillisForPresave() int64 {
+	SeqUint64ForPresaveMillis++
+	log.Printf("SeqUint64: %d", SeqUint64ForPresaveMillis)
+	return SeqUint64ForPresaveMillis
+}
+
 func CopyStringMap(originalMap map[string]string) map[string]string {
 	copyMap := make(map[string]string)
 	for k, v := range originalMap {

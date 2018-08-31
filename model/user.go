@@ -193,11 +193,11 @@ func NormalizeEmail(email string) string {
 // be run before saving the user to the db.
 func (u *User) PreSave() {
 	if u.Id == "" {
-		u.Id = NewId()
+		u.Id = NewIdForPresave()
 	}
 
 	if u.Username == "" {
-		u.Username = NewId()
+		u.Username = NewIdForPresave()
 	}
 
 	if u.AuthData != nil && *u.AuthData == "" {
@@ -207,7 +207,7 @@ func (u *User) PreSave() {
 	u.Username = NormalizeUsername(u.Username)
 	u.Email = NormalizeEmail(u.Email)
 
-	u.CreateAt = GetMillis()
+	u.CreateAt = GetMillisForPresave()
 	u.UpdateAt = u.CreateAt
 
 	u.LastPasswordUpdate = u.CreateAt
@@ -239,7 +239,7 @@ func (u *User) PreSave() {
 func (u *User) PreUpdate() {
 	u.Username = NormalizeUsername(u.Username)
 	u.Email = NormalizeEmail(u.Email)
-	u.UpdateAt = GetMillis()
+	u.UpdateAt = GetMillisForPresave()
 
 	if u.AuthData != nil && *u.AuthData == "" {
 		u.AuthData = nil

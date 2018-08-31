@@ -209,5 +209,5 @@ func (lr *LicenseRecord) IsValid() *AppError {
 }
 
 func (lr *LicenseRecord) PreSave() {
-	lr.CreateAt = GetMillis()
+	lr.CreateAt = GetMillisForPresave()
 }
