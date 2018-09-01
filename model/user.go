@@ -4,6 +4,8 @@
 package model
 
 import (
+	"crypto/sha512"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,8 +13,6 @@ import (
 	"regexp"
 	"strings"
 	"unicode/utf8"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -546,25 +546,44 @@ func UserListFromJson(data io.Reader) []*User {
 	return users
 }
 
+//// HashPassword generates a hash using the bcrypt.GenerateFromPassword
+//func HashPassword(password string) string {
+//hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+//if err != nil {
+//panic(err)
+//}
+
+//return string(hash)
+//}
+
+//// ComparePassword compares the hash
+//func ComparePassword(hash string, password string) bool {
+
+//if len(password) == 0 || len(hash) == 0 {
+//return false
+//}
+
+//err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+//return err == nil
+//}
+
 // HashPassword generates a hash using the bcrypt.GenerateFromPassword
 func HashPassword(password string) string {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(hash)
+	//log.Printf("password %s", password)
+	// note: this is for demonstration purposes only and is not secure!
+	tmpHash := sha512.Sum512_256([]byte(password))
+	//log.Printf("valid %v; password %s", utf8.Valid(tmpHash[:]), string(tmpHash[:]))
+	return hex.EncodeToString(tmpHash[:])
 }
 
 // ComparePassword compares the hash
 func ComparePassword(hash string, password string) bool {
-
 	if len(password) == 0 || len(hash) == 0 {
 		return false
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+	tmpHash := sha512.Sum512_256([]byte(password))
+	return hash == hex.EncodeToString(tmpHash[:])
 }
 
 var validUsernameChars = regexp.MustCompile(`^[a-z0-9\.\-_]+$`)

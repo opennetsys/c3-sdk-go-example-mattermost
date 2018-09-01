@@ -38,9 +38,31 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("seqUint64 is %d", seqUint64)
 	model.SeqUint64 = uint64(i)
 
+	seqUint64ForPresave := os.Getenv("SeqUint64ForPresave")
+	if seqUint64ForPresave == "" {
+		seqUint64ForPresave = "0"
+	}
+	i, err = strconv.Atoi(seqUint64ForPresave)
+	if err != nil {
+		log.Fatal(err)
+	}
+	model.SeqUint64ForPresave = uint64(i)
+
+	seqUint64ForPresaveMillis := os.Getenv("SeqUint64ForPresaveMillis")
+	if seqUint64ForPresaveMillis == "" {
+		seqUint64ForPresaveMillis = "0"
+	}
+	i, err = strconv.Atoi(seqUint64ForPresaveMillis)
+	if err != nil {
+		log.Fatal(err)
+	}
+	model.SeqUint64ForPresaveMillis = uint64(i)
+
+	log.Printf("seqUint64 is %v", seqUint64)
+	log.Printf("seqUint64ForPresave is %v", seqUint64ForPresave)
+	log.Printf("seqUint64ForPresaveMillis is %v", seqUint64ForPresaveMillis)
 	if err := commands.Run(os.Args[1:]); err != nil {
 		os.Exit(1)
 	}

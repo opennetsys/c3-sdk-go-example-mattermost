@@ -143,7 +143,7 @@ func NewRandomString(length int) string {
 func GetMillis() int64 {
 	SeqUint64++
 	log.Printf("SeqUint64: %d", SeqUint64)
-	return SeqUint64
+	return int64(SeqUint64)
 }
 
 var SeqUint64ForPresave uint64 = 0
@@ -163,15 +163,15 @@ func NewRandomStringForPresave(length int) string {
 	b := sha512.Sum512_256(bs)
 	str := hex.EncodeToString(b[:])
 
-	log.Printf("SeqUint64: %d", SeqUint64ForPresave)
+	log.Printf("SeqUint64ForPresave: %d", SeqUint64ForPresave)
 	return str[:length]
 }
 
 // GetMillis is a convience method to get milliseconds since epoch.
 func GetMillisForPresave() int64 {
 	SeqUint64ForPresaveMillis++
-	log.Printf("SeqUint64: %d", SeqUint64ForPresaveMillis)
-	return SeqUint64ForPresaveMillis
+	log.Printf("SeqUint64ForPresaveMillis: %d", SeqUint64ForPresaveMillis)
+	return int64(SeqUint64ForPresaveMillis)
 }
 
 func CopyStringMap(originalMap map[string]string) map[string]string {
