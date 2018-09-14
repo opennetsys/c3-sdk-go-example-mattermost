@@ -1,4 +1,4 @@
-.PHONY: build package run stop run-client run-server stop-client stop-server restart restart-server restart-client start-docker clean-dist clean nuke check-style check-client-style check-server-style check-unit-tests test dist setup-mac prepare-enteprise run-client-tests setup-run-client-tests cleanup-run-client-tests test-client build-linux build-osx build-windows internal-test-web-client vet run-server-for-web-client-tests
+.PHONY: build package run stop run-client run-server stop-client stop-server restart restart-server restart-client start-docker clean-dist clean nuke check-style check-client-style check-server-style check-unit-tests test dist setup-mac prepare-enteprise run-client-tests setup-run-client-tests cleanup-run-client-tests test-client build-linux build-osx build-windows internal-test-web-client vet run-server-for-web-client-tests wait dump sort-dump clean-dump tar-data get-state untar-data pg-restore set-state source-globals
 
 ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -482,3 +482,32 @@ endif
 ## Help documentatin à la https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' ./Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+wait:
+	@sh ./wait.sh
+
+dump:
+	@mkdir -p ./data/pgdump
+	@PGPASSWORD="docker" pg_dump -d mattermost_db -h localhost -p 5432 -U docker > ./data/pgdump/mattermost_db.sql
+
+sort-dump:
+	@python ./pg_dump_splitsort.py ./data/pgdump/mattermost_db.sql
+
+clean-dump:
+	@rm ./data/pgdump/mattermost_db.sql ./data/pgdump/*status.sql
+
+tar-data:
+	@tar -cf ./state.tar ./data
+
+get-state: stop-server dump sort-dump clean-dump tar-data
+	@echo "done getting state"
+
+untar-data:
+	rm -rf data
+	@tar -xf ./state.tar
+
+pg-restore:
+	@cat ./data/pgdump/*.sql | PGPASSWORD="docker" psql -d mattermost_db -h localhost -p 5432 -U docker
+
+set-state: untar-data pg-restore
+	@echo "done setting state"

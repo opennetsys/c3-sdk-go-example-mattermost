@@ -4,7 +4,10 @@
 package commands
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net"
 	"net/url"
 	"os"
@@ -25,6 +28,7 @@ import (
 
 const (
 	SESSIONS_CLEANUP_BATCH_SIZE = 1000
+	GLOBALS_FILE                = "data/globals/globals.json"
 )
 
 var MaxNotificationsPerChannelDefault int64 = 1000000
@@ -34,6 +38,12 @@ var serverCmd = &cobra.Command{
 	Short:        "Run the Mattermost server",
 	RunE:         serverCmdF,
 	SilenceUsage: true,
+}
+
+type Globals struct {
+	SeqUint64                 uint64
+	SeqUint64ForPresave       uint64
+	SeqUint64ForPresaveMillis uint64
 }
 
 func init() {
@@ -146,47 +156,47 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 		manualtesting.Init(api)
 	}
 
-	a.Go(func() {
-		runSecurityJob(a)
-	})
-	a.Go(func() {
-		runDiagnosticsJob(a)
-	})
-	a.Go(func() {
-		runSessionCleanupJob(a)
-	})
-	a.Go(func() {
-		runTokenCleanupJob(a)
-	})
-	a.Go(func() {
-		runCommandWebhookCleanupJob(a)
-	})
+	//a.Go(func() {
+	//runSecurityJob(a)
+	//})
+	//a.Go(func() {
+	//runDiagnosticsJob(a)
+	//})
+	//a.Go(func() {
+	//runSessionCleanupJob(a)
+	//})
+	//a.Go(func() {
+	//runTokenCleanupJob(a)
+	//})
+	//a.Go(func() {
+	//runCommandWebhookCleanupJob(a)
+	//})
 
-	if complianceI := a.Compliance; complianceI != nil {
-		complianceI.StartComplianceDailyJob()
-	}
+	//if complianceI := a.Compliance; complianceI != nil {
+	//complianceI.StartComplianceDailyJob()
+	//}
 
-	if a.Cluster != nil {
-		a.RegisterAllClusterMessageHandlers()
-		a.Cluster.StartInterNodeCommunication()
-	}
+	//if a.Cluster != nil {
+	//a.RegisterAllClusterMessageHandlers()
+	//a.Cluster.StartInterNodeCommunication()
+	//}
 
-	if a.Metrics != nil {
-		a.Metrics.StartServer()
-	}
+	//if a.Metrics != nil {
+	//a.Metrics.StartServer()
+	//}
 
-	if a.Elasticsearch != nil {
-		a.StartElasticsearch()
-	}
+	//if a.Elasticsearch != nil {
+	//a.StartElasticsearch()
+	//}
 
-	if *a.Config().JobSettings.RunJobs {
-		a.Jobs.StartWorkers()
-		defer a.Jobs.StopWorkers()
-	}
-	if *a.Config().JobSettings.RunScheduler {
-		a.Jobs.StartSchedulers()
-		defer a.Jobs.StopSchedulers()
-	}
+	//if *a.Config().JobSettings.RunJobs {
+	//a.Jobs.StartWorkers()
+	//defer a.Jobs.StopWorkers()
+	//}
+	//if *a.Config().JobSettings.RunScheduler {
+	//a.Jobs.StartSchedulers()
+	//defer a.Jobs.StopSchedulers()
+	//}
 
 	notifyReady()
 
@@ -195,13 +205,26 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 	signal.Notify(interruptChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-interruptChan
 
-	if a.Cluster != nil {
-		a.Cluster.StopInterNodeCommunication()
+	// write the globals to disk
+	if err := os.Remove(GLOBALS_FILE); err != nil {
+		log.Println(err)
+	}
+	globals := Globals{model.SeqUint64, model.SeqUint64ForPresave, model.SeqUint64ForPresaveMillis}
+	d, err := json.Marshal(globals)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := ioutil.WriteFile(GLOBALS_FILE, d, 0644); err != nil {
+		log.Fatal(err)
 	}
 
-	if a.Metrics != nil {
-		a.Metrics.StopServer()
-	}
+	//if a.Cluster != nil {
+	//a.Cluster.StopInterNodeCommunication()
+	//}
+
+	//if a.Metrics != nil {
+	//a.Metrics.StopServer()
+	//}
 
 	return nil
 }
