@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-hclog"
-	"github.com/mattermost/mattermost-server/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 )
 
 type hclogAdapter struct {

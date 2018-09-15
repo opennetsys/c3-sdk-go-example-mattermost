@@ -4,8 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:$PATH
 
-# TODO: change github.com/mattermost to github.com/c3systems
-RUN mkdir -p /go /go/bin /go/src /go/src/github.com/mattermost/mattermost-server /go/pkg
+RUN mkdir -p /go /go/bin /go/src /go/src/github.com/c3systems/c3-sdk-go-example-mattermost /go/pkg
 RUN apt-get update -y --no-install-recommends
 RUN apt-get install -y --no-install-recommends software-properties-common build-essential curl python3.6 bzr git ca-certificates
 RUN apt-get update -y --no-install-recommends
@@ -26,11 +25,11 @@ EXPOSE 8065
 USER root
 
 # Cd into the api code directory
-WORKDIR /go/src/github.com/mattermost/mattermost-server
+WORKDIR /go/src/github.com/c3systems/c3-sdk-go-example-mattermost
 
 # Copy the local package files to the container's workspace.
-COPY . /go/src/github.com/mattermost/mattermost-server
+COPY . /go/src/github.com/c3systems/c3-sdk-go-example-mattermost
 
-RUN ["chmod", "+x", "/go/src/github.com/mattermost/mattermost-server/docker-entrypoint.sh"]
-RUN ["chmod", "+x", "/go/src/github.com/mattermost/mattermost-server/wait.sh"]
-ENTRYPOINT ["/go/src/github.com/mattermost/mattermost-server/docker-entrypoint.sh"]
+RUN ["chmod", "+x", "/go/src/github.com/c3systems/c3-sdk-go-example-mattermost/docker-entrypoint.sh"]
+RUN ["chmod", "+x", "/go/src/github.com/c3systems/c3-sdk-go-example-mattermost/wait.sh"]
+ENTRYPOINT ["/go/src/github.com/c3systems/c3-sdk-go-example-mattermost/docker-entrypoint.sh"]

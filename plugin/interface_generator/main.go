@@ -338,7 +338,7 @@ func generateGlue(info *PluginInterfaceInfo) {
 }
 
 func getPluginPackageDir() string {
-	dirs, err := goList("github.com/mattermost/mattermost-server/plugin")
+	dirs, err := goList("github.com/c3systems/c3-sdk-go-example-mattermost/plugin")
 	if err != nil {
 		panic(err)
 	} else if len(dirs) != 1 {

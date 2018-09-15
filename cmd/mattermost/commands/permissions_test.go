@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mattermost/mattermost-server/api4"
-	"github.com/mattermost/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/api4"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 func TestPermissionsExport_rejectsUnlicensed(t *testing.T) {

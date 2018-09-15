@@ -4,7 +4,7 @@
 package wsapi
 
 import (
-	"github.com/mattermost/mattermost-server/app"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
 )
 
 type API struct {

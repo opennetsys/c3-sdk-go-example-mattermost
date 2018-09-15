@@ -6,8 +6,8 @@ package storetest
 import (
 	"github.com/stretchr/testify/mock"
 
-	"github.com/mattermost/mattermost-server/store"
-	"github.com/mattermost/mattermost-server/store/storetest/mocks"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store/storetest/mocks"
 )
 
 // NewStoreChannel returns a channel that will receive the given result.

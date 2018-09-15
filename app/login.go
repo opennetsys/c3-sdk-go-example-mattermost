@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/avct/uasurfer"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/plugin"
-	"github.com/mattermost/mattermost-server/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
 func (a *App) CheckForClienSideCert(r *http.Request) (string, string, string) {

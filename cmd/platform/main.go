@@ -8,7 +8,7 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/mattermost/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 func main() {

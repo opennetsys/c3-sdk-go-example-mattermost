@@ -3,7 +3,7 @@
 
 package app
 
-import "github.com/mattermost/mattermost-server/model"
+import "github.com/c3systems/c3-sdk-go-example-mattermost/model"
 
 // Registers a given function to be called when the cluster leader may have changed. Returns a unique ID for the
 // listener which can later be used to remove it. If clustering is not enabled in this build, the callback will never

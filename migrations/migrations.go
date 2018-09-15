@@ -4,10 +4,10 @@
 package migrations
 
 import (
-	"github.com/mattermost/mattermost-server/app"
-	tjobs "github.com/mattermost/mattermost-server/jobs/interfaces"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
+	tjobs "github.com/c3systems/c3-sdk-go-example-mattermost/jobs/interfaces"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
 const (

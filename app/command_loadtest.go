@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mattermost/mattermost-server/mlog"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 	goi18n "github.com/nicksnyder/go-i18n/i18n"
 )
 
@@ -322,7 +322,7 @@ func (me *LoadTestProvider) UrlCommand(a *App, args *model.CommandArgs, message 
 
 	// provide a shortcut to easily access tests stored in doc/developer/tests
 	if !strings.HasPrefix(url, "http") {
-		url = "https://raw.githubusercontent.com/mattermost/mattermost-server/master/tests/" + url
+		url = "https://raw.githubusercontent.com/c3systems/c3-sdk-go-example-mattermost/master/tests/" + url
 
 		if path.Ext(url) == "" {
 			url += ".md"
@@ -372,7 +372,7 @@ func (me *LoadTestProvider) JsonCommand(a *App, args *model.CommandArgs, message
 
 	// provide a shortcut to easily access tests stored in doc/developer/tests
 	if !strings.HasPrefix(url, "http") {
-		url = "https://raw.githubusercontent.com/mattermost/mattermost-server/master/tests/" + url
+		url = "https://raw.githubusercontent.com/c3systems/c3-sdk-go-example-mattermost/master/tests/" + url
 
 		if path.Ext(url) == "" {
 			url += ".json"

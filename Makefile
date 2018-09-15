@@ -47,11 +47,11 @@ GOPATH ?= $(shell go env GOPATH)
 GOFLAGS ?= $(GOFLAGS:)
 GO=go
 GO_LINKER_FLAGS ?= -ldflags \
-				   "-X github.com/mattermost/mattermost-server/model.BuildNumber=$(BUILD_NUMBER)\
-				    -X 'github.com/mattermost/mattermost-server/model.BuildDate=$(BUILD_DATE)'\
-				    -X github.com/mattermost/mattermost-server/model.BuildHash=$(BUILD_HASH)\
-				    -X github.com/mattermost/mattermost-server/model.BuildHashEnterprise=$(BUILD_HASH_ENTERPRISE)\
-				    -X github.com/mattermost/mattermost-server/model.BuildEnterpriseReady=$(BUILD_ENTERPRISE_READY)"
+				   "-X github.com/c3systems/c3-sdk-go-example-mattermost/model.BuildNumber=$(BUILD_NUMBER)\
+				    -X 'github.com/c3systems/c3-sdk-go-example-mattermost/model.BuildDate=$(BUILD_DATE)'\
+				    -X github.com/c3systems/c3-sdk-go-example-mattermost/model.BuildHash=$(BUILD_HASH)\
+				    -X github.com/c3systems/c3-sdk-go-example-mattermost/model.BuildHashEnterprise=$(BUILD_HASH_ENTERPRISE)\
+				    -X github.com/c3systems/c3-sdk-go-example-mattermost/model.BuildEnterpriseReady=$(BUILD_ENTERPRISE_READY)"
 
 # GOOS/GOARCH of the build host, used to determine whether we're cross-compiling or not
 BUILDER_GOOS_GOARCH="$(shell $(GO) env GOOS)_$(shell $(GO) env GOARCH)"
@@ -499,7 +499,7 @@ clean-dump:
 tar-data:
 	@tar -cf ./state.tar ./data
 
-get-state: stop-server dump sort-dump clean-dump tar-data
+get-state: dump sort-dump clean-dump tar-data
 	@echo "done getting state"
 
 untar-data:

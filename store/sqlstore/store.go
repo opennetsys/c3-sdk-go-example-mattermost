@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/mattermost/gorp"
 
-	"github.com/mattermost/mattermost-server/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
 /*type SqlStore struct {

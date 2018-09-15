@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/dyatlov/go-opengraph/opengraph"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 const OPEN_GRAPH_METADATA_CACHE_SIZE = 10000

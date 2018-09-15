@@ -15,14 +15,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mattermost/mattermost-server/api4"
-	"github.com/mattermost/mattermost-server/app"
-	"github.com/mattermost/mattermost-server/manualtesting"
-	"github.com/mattermost/mattermost-server/mlog"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/utils"
-	"github.com/mattermost/mattermost-server/web"
-	"github.com/mattermost/mattermost-server/wsapi"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/api4"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/manualtesting"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/web"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/wsapi"
 	"github.com/spf13/cobra"
 )
 
@@ -209,7 +209,11 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 	if err := os.Remove(GLOBALS_FILE); err != nil {
 		log.Println(err)
 	}
-	globals := Globals{model.SeqUint64, model.SeqUint64ForPresave, model.SeqUint64ForPresaveMillis}
+	globals := Globals{
+		SeqUint64:                 model.SeqUint64,
+		SeqUint64ForPresave:       model.SeqUint64ForPresave,
+		SeqUint64ForPresaveMillis: model.SeqUint64ForPresaveMillis,
+	}
 	d, err := json.Marshal(globals)
 	if err != nil {
 		log.Fatal(err)

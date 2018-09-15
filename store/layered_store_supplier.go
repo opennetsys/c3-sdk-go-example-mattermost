@@ -3,7 +3,7 @@
 
 package store
 
-import "github.com/mattermost/mattermost-server/model"
+import "github.com/c3systems/c3-sdk-go-example-mattermost/model"
 import "context"
 
 type LayeredStoreSupplierResult struct {

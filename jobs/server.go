@@ -4,10 +4,10 @@
 package jobs
 
 import (
-	ejobs "github.com/mattermost/mattermost-server/einterfaces/jobs"
-	tjobs "github.com/mattermost/mattermost-server/jobs/interfaces"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/store"
+	ejobs "github.com/c3systems/c3-sdk-go-example-mattermost/einterfaces/jobs"
+	tjobs "github.com/c3systems/c3-sdk-go-example-mattermost/jobs/interfaces"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
 type ConfigService interface {

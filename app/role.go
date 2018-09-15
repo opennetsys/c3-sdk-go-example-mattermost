@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 func (a *App) GetRole(id string) (*model.Role, *model.AppError) {

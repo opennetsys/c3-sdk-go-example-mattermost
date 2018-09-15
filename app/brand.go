@@ -13,7 +13,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 const (

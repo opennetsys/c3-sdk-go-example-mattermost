@@ -10,7 +10,7 @@ import (
 	goi18n "github.com/nicksnyder/go-i18n/i18n"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 func dummyWebsocketHandler(t *testing.T) http.HandlerFunc {
