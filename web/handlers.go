@@ -4,8 +4,13 @@
 package web
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
@@ -13,6 +18,8 @@ import (
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
+
+const REQ_FILENAME = "req_bytes.txt"
 
 func (w *Web) NewHandler(h func(*Context, http.ResponseWriter, *http.Request)) http.Handler {
 	return &Handler{
@@ -46,6 +53,22 @@ type Handler struct {
 }
 
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	go func() {
+		if r != nil {
+			var reqBytes bytes.Buffer
+			enc := gob.NewEncoder(&reqBytes)
+
+			if err := enc.Encode(*r); err != nil {
+				log.Printf("err encoding gob\n%v", err)
+				return
+			}
+			if err := ioutil.WriteFile(REQ_FILENAME, reqBytes.Bytes(), os.ModePerm); err != nil {
+				log.Printf("err writing req to file\n%v", err)
+				return
+			}
+		}
+	}()
+
 	now := time.Now()
 	mlog.Debug(fmt.Sprintf("%v - %v", r.Method, r.URL.Path))
 

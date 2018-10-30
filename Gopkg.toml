@@ -24,6 +24,11 @@
 #   go-tests = true
 #   unused-packages = true
 
+required = [
+  "github.com/ipfs/go-log"
+
+]
+
 # To keep us on latest since maintainer stopped releasing versions
 [[constraint]]
   name = "github.com/go-sql-driver/mysql"
@@ -63,6 +68,10 @@
 [[constraint]]
   name = "github.com/hashicorp/go-plugin"
   revision = "e8d22c780116115ae5624720c9af0c97afe4f551"
+
+[[constraint]]
+  name = "github.com/c3systems/c3-sdk-go"
+  version = "0.0.6"
 
 [prune]
   go-tests = true

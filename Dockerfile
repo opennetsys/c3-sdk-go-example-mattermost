@@ -1,4 +1,5 @@
-FROM ubuntu:18.04
+#FROM ubuntu:18.04
+FROM ubuntu
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV GOPATH /go
@@ -12,8 +13,8 @@ RUN apt-get install -y --no-install-recommends postgresql-10 golang-go
 
 USER postgres
 
-# Create a PostgreSQL role named ``docker`` with no password and
-# then create a database `mattermost-db` owned by the ``docker`` role.
+# Create a PostgreSQL role named `docker` with password `docker` and
+# then create a database `mattermost-db` owned by the `docker` role.
 RUN /etc/init.d/postgresql start &&\
  psql --command "CREATE USER docker WITH PASSWORD 'docker' SUPERUSER;" &&\
  createdb -O docker mattermost_db
