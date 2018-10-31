@@ -19,6 +19,7 @@ import (
 	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
+// REQ_FILENAME is where the request should be written to
 const REQ_FILENAME = "req_bytes.txt"
 
 func (w *Web) NewHandler(h func(*Context, http.ResponseWriter, *http.Request)) http.Handler {
@@ -58,7 +59,12 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			var reqBytes bytes.Buffer
 			enc := gob.NewEncoder(&reqBytes)
 
-			if err := enc.Encode(*r); err != nil {
+			tr, err := utils.TransformRequest(r)
+			if err != nil {
+				log.Printf("err transforming request\n%v", err)
+				return
+			}
+			if err := enc.Encode(tr); err != nil {
 				log.Printf("err encoding gob\n%v", err)
 				return
 			}

@@ -487,6 +487,7 @@ wait:
 	@sh ./wait.sh
 
 dump:
+	@rm -rf ./data/pgdump
 	@mkdir -p ./data/pgdump
 	@PGPASSWORD="docker" pg_dump -d mattermost_db -h localhost -p 5432 -U docker > ./data/pgdump/mattermost_db.sql
 
@@ -497,6 +498,7 @@ clean-dump:
 	@rm ./data/pgdump/mattermost_db.sql ./data/pgdump/*status.sql
 
 tar-data:
+	@rm ./state.tar
 	@tar -cf ./state.tar ./data
 
 get-state: dump sort-dump clean-dump tar-data
