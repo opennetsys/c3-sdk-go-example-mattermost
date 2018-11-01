@@ -18,6 +18,7 @@ import (
 
 	"github.com/c3systems/c3-sdk-go-example-mattermost/cmd/mattermost/commands"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 
 	// Plugins
 	_ "github.com/c3systems/c3-sdk-go-example-mattermost/model/gitlab"
@@ -41,6 +42,8 @@ import (
 
 var client = c3.NewC3()
 
+//var client *c3.C3
+
 const (
 	key          = "data"
 	GLOBALS_FILE = "./data/globals/globals.json"
@@ -51,6 +54,18 @@ type App struct {
 }
 
 func (a *App) processReq(reqStr string) error {
+	//// JUST FOR TESTING
+	//stateBytes1, err := ioutil.ReadFile("./state.tar")
+	//if err != nil {
+	//	log.Printf("err reading state tar file\n%v", err)
+	//	return err
+	//}
+
+	//if err := client.State().Set([]byte(key), stateBytes1); err != nil {
+	//	log.Printf("err setting client state\n%v", err)
+	//	return err
+	//}
+	//// DONE JUST FOR TESTING
 	prevState, found := client.State().Get([]byte(key))
 	if !found {
 		return errors.New("no previous state")
@@ -63,7 +78,14 @@ func (a *App) processReq(reqStr string) error {
 		return err
 	}
 
-	cmd := exec.Command("sh", "-c", "make set-state")
+	cmd := exec.Command("/bin/sh", "./set_state.sh")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Printf("err running set_state\n%v\nnoutput:\n%s", err, string(out))
+		return err
+	}
+
+	log.Println(string(out))
 	if err := cmd.Start(); err != nil {
 		log.Printf("err executing set-state\n%v", err)
 		return err
@@ -92,9 +114,15 @@ func (a *App) processReq(reqStr string) error {
 	reqBytes := bytes.NewBuffer(b)
 	dec := gob.NewDecoder(reqBytes)
 
-	var req http.Request
-	if err = dec.Decode(&req); err != nil {
+	var tr utils.TransformedRequest
+	if err = dec.Decode(&tr); err != nil {
 		log.Printf("err decoding req:\n %v", err)
+		return err
+	}
+
+	req, err := utils.UnTransformRequest(&tr)
+	if err != nil {
+		log.Printf("err untransforming request\n%v", err)
 		return err
 	}
 
@@ -102,7 +130,7 @@ func (a *App) processReq(reqStr string) error {
 		Timeout: time.Duration(10 * time.Second),
 	}
 
-	resp, err := httpClient.Do(&req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		log.Printf("err sending req\n%v", err)
 		return err
@@ -132,16 +160,23 @@ func (a *App) processReq(reqStr string) error {
 		return err
 	}
 
-	cmd = exec.Command("sh", "-c", "make get-state")
-	if err = cmd.Start(); err != nil {
-		log.Printf("err getting state\n%v", err)
+	cmd = exec.Command("/bin/sh", "./get_state.sh")
+	out, err = cmd.CombinedOutput()
+	if err != nil {
+		log.Printf("err running get_state\n%v\nnoutput:\n%s", err, string(out))
 		return err
 	}
 
-	if err = cmd.Wait(); err != nil {
-		log.Printf("err waiting on get-state\n%v", err)
-		return err
-	}
+	log.Println(string(out))
+	//if err = cmd.Start(); err != nil {
+	//	log.Printf("err getting state\n%v", err)
+	//	return err
+	//}
+
+	//if err = cmd.Wait(); err != nil {
+	//	log.Printf("err waiting on get-state\n%v", err)
+	//	return err
+	//}
 
 	stateBytes, err := ioutil.ReadFile("./state.tar")
 	if err != nil {

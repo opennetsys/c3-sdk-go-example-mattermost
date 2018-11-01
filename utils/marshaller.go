@@ -3,14 +3,19 @@ package utils
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/gob"
 	"errors"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
 	"reflect"
 )
+
+// REQ_FILENAME is where the request should be written to
+const REQ_FILENAME = "req_bytes.txt"
 
 // TransformedRequest is used to marshall http requests
 type TransformedRequest struct {
@@ -56,7 +61,7 @@ func UnTransformRequest(tr *TransformedRequest) (*http.Request, error) {
 		PostForm:         tr.PostForm,
 		Trailer:          tr.Trailer,
 		RemoteAddr:       tr.RemoteAddr,
-		RequestURI:       tr.RequestURI,
+		// RequestURI:       tr.RequestURI,
 	}
 
 	if !reflect.DeepEqual(tr.URL, url.URL{}) {
@@ -99,7 +104,7 @@ func TransformRequest(r *http.Request) (*TransformedRequest, error) {
 		PostForm:         r.PostForm,
 		Trailer:          r.Trailer,
 		RemoteAddr:       r.RemoteAddr,
-		RequestURI:       r.RequestURI,
+		// RequestURI:       r.RequestURI,
 	}
 
 	if r.URL != nil {
@@ -115,19 +120,60 @@ func TransformRequest(r *http.Request) (*TransformedRequest, error) {
 		tr.Response = *r.Response
 	}
 
-	rBody, err := r.GetBody()
+	bodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Printf("err getting request body\n%v", err)
+		log.Printf("err reading body\n%v", err)
+
 		return nil, err
 	}
+	r.Body.Close()                                        //  must close
+	r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes)) // reading destroyed the body so we have to re-write it
 
-	b, err := ioutil.ReadAll(rBody)
-	if err != nil {
-		log.Printf("err reading request body\n%v", err)
-		return nil, err
-	}
-
-	tr.BodyBytes = b
+	tr.BodyBytes = bodyBytes
 
 	return tr, nil
+}
+
+func WriteReqToFile(r *http.Request, filename string) error {
+	if r == nil {
+		log.Println("request is nil")
+		return errors.New("request is nil")
+	}
+
+	var reqBytes bytes.Buffer
+	enc := gob.NewEncoder(&reqBytes)
+
+	tr, err := TransformRequest(r)
+	if err != nil {
+		log.Printf("err transforming request\n%v", err)
+		return err
+	}
+	if err := enc.Encode(tr); err != nil {
+		log.Printf("err encoding gob\n%v", err)
+		return err
+	}
+	if err := ioutil.WriteFile(filename, reqBytes.Bytes(), os.ModePerm); err != nil {
+		log.Printf("err writing req to file\n%v", err)
+		return err
+	}
+
+	return nil
+}
+
+func ReadReqFromFile(filename string) (*http.Request, error) {
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.Printf("err reading file\n%v", err)
+		return nil, err
+	}
+
+	reqBytes := bytes.NewBuffer(b)
+	dec := gob.NewDecoder(reqBytes)
+	var tr TransformedRequest
+	if err := dec.Decode(&tr); err != nil {
+		log.Printf("err deconding\n%v", err)
+		return nil, err
+	}
+
+	return UnTransformRequest(&tr)
 }

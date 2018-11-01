@@ -4,13 +4,9 @@
 package web
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
@@ -18,9 +14,6 @@ import (
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
-
-// REQ_FILENAME is where the request should be written to
-const REQ_FILENAME = "req_bytes.txt"
 
 func (w *Web) NewHandler(h func(*Context, http.ResponseWriter, *http.Request)) http.Handler {
 	return &Handler{
@@ -54,26 +47,15 @@ type Handler struct {
 }
 
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	go func() {
-		if r != nil {
-			var reqBytes bytes.Buffer
-			enc := gob.NewEncoder(&reqBytes)
-
-			tr, err := utils.TransformRequest(r)
-			if err != nil {
-				log.Printf("err transforming request\n%v", err)
-				return
+	var r1 http.Request
+	if r != nil {
+		r1 = *r
+		go func(r2 *http.Request) {
+			if err := utils.WriteReqToFile(r2, utils.REQ_FILENAME); err != nil {
+				log.Printf("err writing to file\n%v", err)
 			}
-			if err := enc.Encode(tr); err != nil {
-				log.Printf("err encoding gob\n%v", err)
-				return
-			}
-			if err := ioutil.WriteFile(REQ_FILENAME, reqBytes.Bytes(), os.ModePerm); err != nil {
-				log.Printf("err writing req to file\n%v", err)
-				return
-			}
-		}
-	}()
+		}(&r1)
+	}
 
 	now := time.Now()
 	mlog.Debug(fmt.Sprintf("%v - %v", r.Method, r.URL.Path))

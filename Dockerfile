@@ -7,7 +7,7 @@ ENV PATH $GOPATH/bin:$PATH
 
 RUN mkdir -p /go /go/bin /go/src /go/src/github.com/c3systems/c3-sdk-go-example-mattermost /go/pkg
 RUN apt-get update -y --no-install-recommends
-RUN apt-get install -y --no-install-recommends software-properties-common build-essential curl python3.6 bzr git ca-certificates
+RUN apt-get install -y --no-install-recommends software-properties-common build-essential curl python python3.6 bzr git ca-certificates
 RUN apt-get update -y --no-install-recommends
 RUN apt-get install -y --no-install-recommends postgresql-10 golang-go
 
