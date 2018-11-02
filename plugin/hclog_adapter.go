@@ -9,6 +9,8 @@ import (
 	"strings"
 
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+
+	hclog "github.com/hashicorp/go-hclog"
 )
 
 type hclogAdapter struct {

@@ -10,17 +10,18 @@ import (
 	"io"
 	"mime"
 	"net"
+	"net/http"
 	"net/mail"
 	"net/smtp"
 	"time"
-
-	"net/http"
 
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/services/filesstore"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 	"github.com/jaytaylor/html2text"
+
+	gomail "gopkg.in/gomail.v2"
 )
 
 func encodeRFC2047Word(s string) string {

@@ -3,6 +3,10 @@
 
 package plugin
 
+import (
+	plugin "github.com/hashicorp/go-plugin"
+)
+
 // Starts the serving of a Mattermost plugin over net/rpc. gRPC is not yet supported.
 //
 // Call this when your plugin is ready to start.

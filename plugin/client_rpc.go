@@ -18,6 +18,8 @@ import (
 	"os"
 	"reflect"
 
+	plugin "github.com/hashicorp/go-plugin"
+
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )

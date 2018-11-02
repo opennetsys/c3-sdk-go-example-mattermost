@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/c3systems/c3-sdk-go-example-mattermost/filesstore"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/services/filesstore"
 )
 
 func (api *API) InitSystem() {

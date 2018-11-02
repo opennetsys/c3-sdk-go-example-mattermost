@@ -5,6 +5,7 @@ package plugin
 
 import (
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	plugin "github.com/hashicorp/go-plugin"
 )
 
 // The API can be used to retrieve data or perform actions on behalf of the plugin. Most methods

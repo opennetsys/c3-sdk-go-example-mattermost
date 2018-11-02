@@ -18,8 +18,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"net/http"
-
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"

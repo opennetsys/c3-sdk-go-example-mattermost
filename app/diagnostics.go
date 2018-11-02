@@ -8,6 +8,8 @@ import (
 	"runtime"
 	"strings"
 
+	analytics "github.com/segmentio/analytics-go"
+
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )

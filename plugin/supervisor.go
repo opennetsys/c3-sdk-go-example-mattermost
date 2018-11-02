@@ -13,6 +13,8 @@ import (
 
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+
+	plugin "github.com/hashicorp/go-plugin"
 )
 
 type supervisor struct {
