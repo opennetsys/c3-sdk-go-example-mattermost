@@ -7,25 +7,12 @@ import (
 	ejobs "github.com/c3systems/c3-sdk-go-example-mattermost/einterfaces/jobs"
 	tjobs "github.com/c3systems/c3-sdk-go-example-mattermost/jobs/interfaces"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/services/configservice"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
-type ConfigService interface {
-	Config() *model.Config
-	AddConfigListener(func(old, current *model.Config)) string
-	RemoveConfigListener(string)
-}
-
-type StaticConfigService struct {
-	Cfg *model.Config
-}
-
-func (s StaticConfigService) Config() *model.Config                                   { return s.Cfg }
-func (StaticConfigService) AddConfigListener(func(old, current *model.Config)) string { return "" }
-func (StaticConfigService) RemoveConfigListener(string)                               {}
-
 type JobServer struct {
-	ConfigService ConfigService
+	ConfigService configservice.ConfigService
 	Store         store.Store
 	Workers       *Workers
 	Schedulers    *Schedulers
@@ -36,9 +23,10 @@ type JobServer struct {
 	ElasticsearchIndexer    ejobs.ElasticsearchIndexerInterface
 	LdapSync                ejobs.LdapSyncInterface
 	Migrations              tjobs.MigrationsJobInterface
+	Plugins                 tjobs.PluginsJobInterface
 }
 
-func NewJobServer(configService ConfigService, store store.Store) *JobServer {
+func NewJobServer(configService configservice.ConfigService, store store.Store) *JobServer {
 	return &JobServer{
 		ConfigService: configService,
 		Store:         store,

@@ -11,13 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/go-plugin"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 type supervisor struct {
-	pluginId    string
 	client      *plugin.Client
 	hooks       Hooks
 	implemented [TotalHooksId]bool

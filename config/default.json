@@ -7,6 +7,10 @@
         "ConnectionSecurity": "",
         "TLSCertFile": "",
         "TLSKeyFile": "",
+        "TLSMinVer": "1.2",
+        "TLSStrictTransport": false,
+        "TLSStrictTransportMaxAge": 63072000,
+        "TLSOverwriteCiphers": [],
         "UseLetsEncrypt": false,
         "LetsEncryptCertificateCacheFile": "./config/letsencrypt.cache",
         "Forward80To443": false,
@@ -72,7 +76,6 @@
         "ImageProxyURL": "",
         "EnableAPITeamDeletion": false,
         "ExperimentalEnableHardenedMode": false,
-        "ExperimentalLimitClientConfig": false,
         "EnableEmailInvitations": false
     },
     "TeamSettings": {
@@ -101,7 +104,7 @@
         "MaxNotificationsPerChannel": 1000,
         "EnableConfirmNotificationsToChannel": true,
         "TeammateNameDisplay": "username",
-        "ViewArchivedChannels": true,
+        "ExperimentalViewArchivedChannels": false,
         "ExperimentalEnableAutomaticReplies": false,
         "ExperimentalHideTownSquareinLHS": false,
         "ExperimentalTownSquareIsReadOnly": false,
@@ -187,8 +190,8 @@
         "SMTPPort": "2500",
         "ConnectionSecurity": "",
         "InviteSalt": "",
-        "SendPushNotifications": false,
-        "PushNotificationServer": "",
+        "SendPushNotifications": true,
+        "PushNotificationServer": "https://push-test.mattermost.com",
         "PushNotificationContents": "generic",
         "EnableEmailBatching": false,
         "EmailBatchingBufferSize": 256,
@@ -308,6 +311,7 @@
     "SamlSettings": {
         "Enable": false,
         "EnableSyncWithLdap": false,
+        "EnableSyncWithLdapIncludeAuth": false,
         "Verify": true,
         "Encrypt": true,
         "IdpUrl": "",
@@ -318,6 +322,7 @@
         "IdpCertificateFile": "",
         "PublicCertificateFile": "",
         "PrivateKeyFile": "",
+        "IdAttribute": "",
         "FirstNameAttribute": "",
         "LastNameAttribute": "",
         "EmailAttribute": "",
@@ -359,16 +364,6 @@
     },
     "AnalyticsSettings": {
         "MaxUsersForStatistics": 2500
-    },
-    "WebrtcSettings": {
-        "Enable": false,
-        "GatewayWebsocketUrl": "",
-        "GatewayAdminUrl": "",
-        "GatewayAdminSecret": "",
-        "StunURI": "",
-        "TurnURI": "",
-        "TurnUsername": "",
-        "TurnSharedKey": ""
     },
     "ElasticsearchSettings": {
         "ConnectionUrl": "http://dockerhost:9200",

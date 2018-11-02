@@ -184,8 +184,11 @@ func (me *TestHelper) TearDown() {
 
 	go func() {
 		defer wg.Done()
-		options := map[string]bool{}
-		options[store.USER_SEARCH_OPTION_NAMES_ONLY_NO_FULL_NAME] = true
+		options := &model.UserSearchOptions{
+			AllowEmails:    false,
+			AllowFullNames: false,
+			Limit:          model.USER_SEARCH_MAX_LIMIT,
+		}
 		if result := <-me.App.Srv.Store.User().Search("", "fakeuser", options); result.Err != nil {
 			mlog.Error("Error tearing down test users")
 		} else {
@@ -442,6 +445,31 @@ func (me *TestHelper) CreateMessagePostWithClient(client *model.Client4, channel
 	}
 	utils.EnableDebugLogForTest()
 	return rpost
+}
+
+func (me *TestHelper) CreateMessagePostNoClient(channel *model.Channel, message string, createAtTime int64) *model.Post {
+	post := store.Must(me.App.Srv.Store.Post().Save(&model.Post{
+		UserId:    me.BasicUser.Id,
+		ChannelId: channel.Id,
+		Message:   message,
+		CreateAt:  createAtTime,
+	})).(*model.Post)
+
+	return post
+}
+
+func (me *TestHelper) CreateDmChannel(user *model.User) *model.Channel {
+	utils.DisableDebugLogForTest()
+	var err *model.AppError
+	var channel *model.Channel
+	if channel, err = me.App.CreateDirectChannel(me.BasicUser.Id, user.Id); err != nil {
+		mlog.Error(err.Error())
+
+		time.Sleep(time.Second)
+		panic(err)
+	}
+	utils.EnableDebugLogForTest()
+	return channel
 }
 
 func (me *TestHelper) LoginBasic() {

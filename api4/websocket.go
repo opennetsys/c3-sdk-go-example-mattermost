@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/websocket"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/gorilla/websocket"
 )
 
 func (api *API) InitWebSocket() {

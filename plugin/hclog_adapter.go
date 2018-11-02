@@ -8,7 +8,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/hashicorp/go-hclog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 )
 
@@ -97,3 +96,5 @@ func (h *hclogAdapter) ResetNamed(name string) hclog.Logger {
 func (h *hclogAdapter) StandardLogger(opts *hclog.StandardLoggerOptions) *log.Logger {
 	return h.wrappedLogger.StdLog()
 }
+
+func (h *hclogAdapter) SetLevel(hclog.Level) {}

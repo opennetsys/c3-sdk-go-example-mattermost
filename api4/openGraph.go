@@ -6,9 +6,9 @@ package api4
 import (
 	"net/http"
 
-	"github.com/dyatlov/go-opengraph/opengraph"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
+	"github.com/dyatlov/go-opengraph/opengraph"
 )
 
 const OPEN_GRAPH_METADATA_CACHE_SIZE = 10000

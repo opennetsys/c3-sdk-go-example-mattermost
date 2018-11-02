@@ -384,6 +384,22 @@ func (_m *Store) Team() store.TeamStore {
 	return r0
 }
 
+// TermsOfService provides a mock function with given fields:
+func (_m *Store) TermsOfService() store.TermsOfServiceStore {
+	ret := _m.Called()
+
+	var r0 store.TermsOfServiceStore
+	if rf, ok := ret.Get(0).(func() store.TermsOfServiceStore); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(store.TermsOfServiceStore)
+		}
+	}
+
+	return r0
+}
+
 // Token provides a mock function with given fields:
 func (_m *Store) Token() store.TokenStore {
 	ret := _m.Called()

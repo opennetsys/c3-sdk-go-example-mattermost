@@ -14,8 +14,8 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/fsnotify/fsnotify"
 	"github.com/nicksnyder/go-i18n/i18n"
 )
 

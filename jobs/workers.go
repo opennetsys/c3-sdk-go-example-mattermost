@@ -8,11 +8,12 @@ import (
 
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/services/configservice"
 )
 
 type Workers struct {
 	startOnce     sync.Once
-	ConfigService ConfigService
+	ConfigService configservice.ConfigService
 	Watcher       *Watcher
 
 	DataRetention            model.Worker
@@ -21,6 +22,7 @@ type Workers struct {
 	ElasticsearchAggregation model.Worker
 	LdapSync                 model.Worker
 	Migrations               model.Worker
+	Plugins                  model.Worker
 
 	listenerId string
 }
@@ -53,6 +55,10 @@ func (srv *JobServer) InitWorkers() *Workers {
 
 	if migrationsInterface := srv.Migrations; migrationsInterface != nil {
 		workers.Migrations = migrationsInterface.MakeWorker()
+	}
+
+	if pluginsInterface := srv.Plugins; pluginsInterface != nil {
+		workers.Migrations = pluginsInterface.MakeWorker()
 	}
 
 	return workers

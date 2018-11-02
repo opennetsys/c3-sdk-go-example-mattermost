@@ -13,6 +13,22 @@ type TeamStore struct {
 	mock.Mock
 }
 
+// AnalyticsGetTeamCountForScheme provides a mock function with given fields: schemeId
+func (_m *TeamStore) AnalyticsGetTeamCountForScheme(schemeId string) store.StoreChannel {
+	ret := _m.Called(schemeId)
+
+	var r0 store.StoreChannel
+	if rf, ok := ret.Get(0).(func(string) store.StoreChannel); ok {
+		r0 = rf(schemeId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(store.StoreChannel)
+		}
+	}
+
+	return r0
+}
+
 // AnalyticsTeamCount provides a mock function with given fields:
 func (_m *TeamStore) AnalyticsTeamCount() store.StoreChannel {
 	ret := _m.Called()
@@ -84,6 +100,22 @@ func (_m *TeamStore) GetAll() store.StoreChannel {
 	var r0 store.StoreChannel
 	if rf, ok := ret.Get(0).(func() store.StoreChannel); ok {
 		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(store.StoreChannel)
+		}
+	}
+
+	return r0
+}
+
+// GetAllForExportAfter provides a mock function with given fields: limit, afterId
+func (_m *TeamStore) GetAllForExportAfter(limit int, afterId string) store.StoreChannel {
+	ret := _m.Called(limit, afterId)
+
+	var r0 store.StoreChannel
+	if rf, ok := ret.Get(0).(func(int, string) store.StoreChannel); ok {
+		r0 = rf(limit, afterId)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(store.StoreChannel)
@@ -244,6 +276,22 @@ func (_m *TeamStore) GetMembersByIds(teamId string, userIds []string) store.Stor
 	var r0 store.StoreChannel
 	if rf, ok := ret.Get(0).(func(string, []string) store.StoreChannel); ok {
 		r0 = rf(teamId, userIds)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(store.StoreChannel)
+		}
+	}
+
+	return r0
+}
+
+// GetTeamMembersForExport provides a mock function with given fields: userId
+func (_m *TeamStore) GetTeamMembersForExport(userId string) store.StoreChannel {
+	ret := _m.Called(userId)
+
+	var r0 store.StoreChannel
+	if rf, ok := ret.Get(0).(func(string) store.StoreChannel); ok {
+		r0 = rf(userId)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(store.StoreChannel)

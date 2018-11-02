@@ -14,7 +14,6 @@ import (
 	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
-	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
 func (api *API) InitUser() {
@@ -27,8 +26,10 @@ func (api *API) InitUser() {
 	api.BaseRoutes.Users.Handle("/stats", api.ApiSessionRequired(getTotalUsersStats)).Methods("GET")
 
 	api.BaseRoutes.User.Handle("", api.ApiSessionRequired(getUser)).Methods("GET")
+	api.BaseRoutes.User.Handle("/image/default", api.ApiSessionRequiredTrustRequester(getDefaultProfileImage)).Methods("GET")
 	api.BaseRoutes.User.Handle("/image", api.ApiSessionRequiredTrustRequester(getProfileImage)).Methods("GET")
 	api.BaseRoutes.User.Handle("/image", api.ApiSessionRequired(setProfileImage)).Methods("POST")
+	api.BaseRoutes.User.Handle("/image", api.ApiSessionRequired(setDefaultProfileImage)).Methods("DELETE")
 	api.BaseRoutes.User.Handle("", api.ApiSessionRequired(updateUser)).Methods("PUT")
 	api.BaseRoutes.User.Handle("/patch", api.ApiSessionRequired(patchUser)).Methods("PUT")
 	api.BaseRoutes.User.Handle("", api.ApiSessionRequired(deleteUser)).Methods("DELETE")
@@ -39,6 +40,7 @@ func (api *API) InitUser() {
 	api.BaseRoutes.Users.Handle("/password/reset/send", api.ApiHandler(sendPasswordReset)).Methods("POST")
 	api.BaseRoutes.Users.Handle("/email/verify", api.ApiHandler(verifyUserEmail)).Methods("POST")
 	api.BaseRoutes.Users.Handle("/email/verify/send", api.ApiHandler(sendVerificationEmail)).Methods("POST")
+	api.BaseRoutes.User.Handle("/terms_of_service", api.ApiSessionRequired(registerTermsOfServiceAction)).Methods("POST")
 
 	api.BaseRoutes.User.Handle("/auth", api.ApiSessionRequiredTrustRequester(updateUserAuth)).Methods("PUT")
 
@@ -192,6 +194,35 @@ func getUserByEmail(c *Context, w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(user.ToJson()))
 }
 
+func getDefaultProfileImage(c *Context, w http.ResponseWriter, r *http.Request) {
+	c.RequireUserId()
+	if c.Err != nil {
+		return
+	}
+
+	users, err := c.App.GetUsersByIds([]string{c.Params.UserId}, c.IsSystemAdmin())
+	if err != nil {
+		c.Err = err
+		return
+	}
+
+	if len(users) == 0 {
+		c.Err = model.NewAppError("getProfileImage", "api.user.get_profile_image.not_found.app_error", nil, "", http.StatusNotFound)
+		return
+	}
+
+	user := users[0]
+	img, err := c.App.GetDefaultProfileImage(user)
+	if err != nil {
+		c.Err = err
+		return
+	}
+
+	w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%v, public", 24*60*60)) // 24 hrs
+	w.Header().Set("Content-Type", "image/png")
+	w.Write(img)
+}
+
 func getProfileImage(c *Context, w http.ResponseWriter, r *http.Request) {
 	c.RequireUserId()
 	if c.Err != nil {
@@ -277,6 +308,37 @@ func setProfileImage(c *Context, w http.ResponseWriter, r *http.Request) {
 	imageData := imageArray[0]
 
 	if err := c.App.SetProfileImage(c.Params.UserId, imageData); err != nil {
+		c.Err = err
+		return
+	}
+
+	c.LogAudit("")
+	ReturnStatusOK(w)
+}
+
+func setDefaultProfileImage(c *Context, w http.ResponseWriter, r *http.Request) {
+	c.RequireUserId()
+	if c.Err != nil {
+		return
+	}
+
+	if !c.App.SessionHasPermissionToUser(c.Session, c.Params.UserId) {
+		c.SetPermissionError(model.PERMISSION_EDIT_OTHER_USERS)
+		return
+	}
+
+	if len(*c.App.Config().FileSettings.DriverName) == 0 {
+		c.Err = model.NewAppError("setDefaultProfileImage", "api.user.upload_profile_user.storage.app_error", nil, "", http.StatusNotImplemented)
+		return
+	}
+
+	user, err := c.App.GetUser(c.Params.UserId)
+	if err != nil {
+		c.Err = err
+		return
+	}
+
+	if err := c.App.SetDefaultProfileImage(user); err != nil {
 		c.Err = err
 		return
 	}
@@ -484,23 +546,26 @@ func searchUsers(c *Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	searchOptions := map[string]bool{}
-	searchOptions[store.USER_SEARCH_OPTION_ALLOW_INACTIVE] = props.AllowInactive
-
-	if !c.App.SessionHasPermissionTo(c.Session, model.PERMISSION_MANAGE_SYSTEM) {
-		hideFullName := !c.App.Config().PrivacySettings.ShowFullName
-		hideEmail := !c.App.Config().PrivacySettings.ShowEmailAddress
-
-		if hideFullName && hideEmail {
-			searchOptions[store.USER_SEARCH_OPTION_NAMES_ONLY_NO_FULL_NAME] = true
-		} else if hideFullName {
-			searchOptions[store.USER_SEARCH_OPTION_ALL_NO_FULL_NAME] = true
-		} else if hideEmail {
-			searchOptions[store.USER_SEARCH_OPTION_NAMES_ONLY] = true
-		}
+	if props.Limit <= 0 || props.Limit > model.USER_SEARCH_MAX_LIMIT {
+		c.SetInvalidParam("limit")
+		return
 	}
 
-	profiles, err := c.App.SearchUsers(props, searchOptions, c.IsSystemAdmin())
+	options := &model.UserSearchOptions{
+		IsAdmin:       c.IsSystemAdmin(),
+		AllowInactive: props.AllowInactive,
+		Limit:         props.Limit,
+	}
+
+	if c.App.SessionHasPermissionTo(c.Session, model.PERMISSION_MANAGE_SYSTEM) {
+		options.AllowEmails = true
+		options.AllowFullNames = true
+	} else {
+		options.AllowEmails = c.App.Config().PrivacySettings.ShowEmailAddress
+		options.AllowFullNames = c.App.Config().PrivacySettings.ShowFullName
+	}
+
+	profiles, err := c.App.SearchUsers(props, options)
 	if err != nil {
 		c.Err = err
 		return
@@ -513,17 +578,26 @@ func autocompleteUsers(c *Context, w http.ResponseWriter, r *http.Request) {
 	channelId := r.URL.Query().Get("in_channel")
 	teamId := r.URL.Query().Get("in_team")
 	name := r.URL.Query().Get("name")
+	limitStr := r.URL.Query().Get("limit")
+	limit, _ := strconv.Atoi(limitStr)
+	if limitStr == "" {
+		limit = model.USER_SEARCH_DEFAULT_LIMIT
+	}
 
 	autocomplete := new(model.UserAutocomplete)
 	var err *model.AppError
 
-	searchOptions := map[string]bool{}
+	options := &model.UserSearchOptions{
+		IsAdmin: c.IsSystemAdmin(),
+		// Never autocomplete on emails.
+		AllowEmails: false,
+		Limit:       limit,
+	}
 
-	hideFullName := !c.App.Config().PrivacySettings.ShowFullName
-	if hideFullName && !c.App.SessionHasPermissionTo(c.Session, model.PERMISSION_MANAGE_SYSTEM) {
-		searchOptions[store.USER_SEARCH_OPTION_NAMES_ONLY_NO_FULL_NAME] = true
+	if c.App.SessionHasPermissionTo(c.Session, model.PERMISSION_MANAGE_SYSTEM) {
+		options.AllowFullNames = true
 	} else {
-		searchOptions[store.USER_SEARCH_OPTION_NAMES_ONLY] = true
+		options.AllowFullNames = c.App.Config().PrivacySettings.ShowFullName
 	}
 
 	if len(channelId) > 0 {
@@ -531,8 +605,20 @@ func autocompleteUsers(c *Context, w http.ResponseWriter, r *http.Request) {
 			c.SetPermissionError(model.PERMISSION_READ_CHANNEL)
 			return
 		}
+	}
 
-		result, err := c.App.AutocompleteUsersInChannel(teamId, channelId, name, searchOptions, c.IsSystemAdmin())
+	if len(teamId) > 0 {
+		if !c.App.SessionHasPermissionToTeam(c.Session, teamId, model.PERMISSION_VIEW_TEAM) {
+			c.SetPermissionError(model.PERMISSION_VIEW_TEAM)
+			return
+		}
+	}
+
+	if len(channelId) > 0 {
+		// Applying the provided teamId here is useful for DMs and GMs which don't belong
+		// to a team. Applying it when the channel does belong to a team makes less sense,
+		// but the permissions are checked above regardless.
+		result, err := c.App.AutocompleteUsersInChannel(teamId, channelId, name, options)
 		if err != nil {
 			c.Err = err
 			return
@@ -541,12 +627,7 @@ func autocompleteUsers(c *Context, w http.ResponseWriter, r *http.Request) {
 		autocomplete.Users = result.InChannel
 		autocomplete.OutOfChannel = result.OutOfChannel
 	} else if len(teamId) > 0 {
-		if !c.App.SessionHasPermissionToTeam(c.Session, teamId, model.PERMISSION_VIEW_TEAM) {
-			c.SetPermissionError(model.PERMISSION_VIEW_TEAM)
-			return
-		}
-
-		result, err := c.App.AutocompleteUsersInTeam(teamId, name, searchOptions, c.IsSystemAdmin())
+		result, err := c.App.AutocompleteUsersInTeam(teamId, name, options)
 		if err != nil {
 			c.Err = err
 			return
@@ -555,7 +636,7 @@ func autocompleteUsers(c *Context, w http.ResponseWriter, r *http.Request) {
 		autocomplete.Users = result.InTeam
 	} else {
 		// No permission check required
-		result, err := c.App.SearchUsersInTeam("", name, searchOptions, c.IsSystemAdmin())
+		result, err := c.App.SearchUsersInTeam("", name, options)
 		if err != nil {
 			c.Err = err
 			return
@@ -580,6 +661,12 @@ func updateUser(c *Context, w http.ResponseWriter, r *http.Request) {
 	user := model.UserFromJson(r.Body)
 	if user == nil {
 		c.SetInvalidParam("user")
+		return
+	}
+
+	// The user being updated in the payload must be the same one as indicated in the URL.
+	if user.Id != c.Params.UserId {
+		c.SetInvalidParam("user_id")
 		return
 	}
 
@@ -1536,5 +1623,26 @@ func enableUserAccessToken(c *Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.LogAudit("success - token_id=" + accessToken.Id)
+	ReturnStatusOK(w)
+}
+
+func registerTermsOfServiceAction(c *Context, w http.ResponseWriter, r *http.Request) {
+	props := model.StringInterfaceFromJson(r.Body)
+
+	userId := c.Session.UserId
+	termsOfServiceId := props["termsOfServiceId"].(string)
+	accepted := props["accepted"].(bool)
+
+	if _, err := c.App.GetTermsOfService(termsOfServiceId); err != nil {
+		c.Err = err
+		return
+	}
+
+	if err := c.App.RecordUserTermsOfServiceAction(userId, termsOfServiceId, accepted); err != nil {
+		c.Err = err
+		return
+	}
+
+	c.LogAudit("TermsOfServiceId=" + termsOfServiceId + ", accepted=" + strconv.FormatBool(accepted))
 	ReturnStatusOK(w)
 }

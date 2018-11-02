@@ -10,10 +10,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"net/http"
 	"net/http/httptest"
 	"time"
+
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 func TestCreateIncomingWebhookForChannel(t *testing.T) {

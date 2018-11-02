@@ -18,7 +18,6 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/hashicorp/go-plugin"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
@@ -62,12 +61,39 @@ type apiRPCServer struct {
 	impl API
 }
 
+// ErrorString is a fallback for sending unregistered implementations of the error interface across
+// rpc. For example, the errorString type from the github.com/pkg/errors package cannot be
+// registered since it is not exported, but this precludes common error handling paradigms.
+// ErrorString merely preserves the string description of the error, while satisfying the error
+// interface itself to allow other registered types (such as model.AppError) to be sent unmodified.
+type ErrorString struct {
+	Err string
+}
+
+func (e ErrorString) Error() string {
+	return e.Err
+}
+
+func encodableError(err error) error {
+	if err == nil {
+		return nil
+	}
+	if _, ok := err.(*model.AppError); ok {
+		return err
+	}
+
+	return &ErrorString{
+		Err: err.Error(),
+	}
+}
+
 // Registering some types used by MM for encoding/gob used by rpc
 func init() {
 	gob.Register([]*model.SlackAttachment{})
 	gob.Register([]interface{}{})
 	gob.Register(map[string]interface{}{})
 	gob.Register(&model.AppError{})
+	gob.Register(&ErrorString{})
 }
 
 // These enforce compile time checks to make sure types implement the interface
@@ -128,7 +154,7 @@ func (s *hooksRPCServer) Implemented(args struct{}, reply *[]string) error {
 		methods = append(methods, method.Name)
 	}
 	*reply = methods
-	return nil
+	return encodableError(nil)
 }
 
 type Z_OnActivateArgs struct {
@@ -168,11 +194,16 @@ func (s *hooksRPCServer) OnActivate(args *Z_OnActivateArgs, returns *Z_OnActivat
 
 	if mmplugin, ok := s.impl.(interface {
 		SetAPI(api API)
-		OnConfigurationChange() error
-	}); !ok {
-	} else {
+	}); ok {
 		mmplugin.SetAPI(s.apiRPCClient)
-		mmplugin.OnConfigurationChange()
+	}
+
+	if mmplugin, ok := s.impl.(interface {
+		OnConfigurationChange() error
+	}); ok {
+		if err := mmplugin.OnConfigurationChange(); err != nil {
+			fmt.Fprintf(os.Stderr, "[ERROR] call to OnConfigurationChange failed, error: %v", err.Error())
+		}
 	}
 
 	// Capture output of standard logger because go-plugin
@@ -182,7 +213,7 @@ func (s *hooksRPCServer) OnActivate(args *Z_OnActivateArgs, returns *Z_OnActivat
 	if hook, ok := s.impl.(interface {
 		OnActivate() error
 	}); ok {
-		returns.A = hook.OnActivate()
+		returns.A = encodableError(hook.OnActivate())
 	}
 	return nil
 }
@@ -245,7 +276,6 @@ func (g *hooksRPCClient) ServeHTTP(c *Context, w http.ResponseWriter, r *http.Re
 		connection, err := g.muxBroker.Accept(serveHTTPStreamId)
 		if err != nil {
 			g.log.Error("Plugin failed to ServeHTTP, muxBroker couldn't accept connection", mlog.Uint32("serve_http_stream_id", serveHTTPStreamId), mlog.Err(err))
-			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 			return
 		}
 		defer connection.Close()
@@ -253,7 +283,6 @@ func (g *hooksRPCClient) ServeHTTP(c *Context, w http.ResponseWriter, r *http.Re
 		rpcServer := rpc.NewServer()
 		if err := rpcServer.RegisterName("Plugin", &httpResponseWriterRPCServer{w: w}); err != nil {
 			g.log.Error("Plugin failed to ServeHTTP, coulden't register RPC name", mlog.Err(err))
-			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 			return
 		}
 		rpcServer.ServeConn(connection)
@@ -265,8 +294,7 @@ func (g *hooksRPCClient) ServeHTTP(c *Context, w http.ResponseWriter, r *http.Re
 		go func() {
 			bodyConnection, err := g.muxBroker.Accept(requestBodyStreamId)
 			if err != nil {
-				g.log.Error("Plugin failed to ServeHTTP, muxBroker couldn't Accept request body connecion", mlog.Err(err))
-				http.Error(w, "500 internal server error", http.StatusInternalServerError)
+				g.log.Error("Plugin failed to ServeHTTP, muxBroker couldn't Accept request body connection", mlog.Err(err))
 				return
 			}
 			defer bodyConnection.Close()
@@ -295,7 +323,6 @@ func (g *hooksRPCClient) ServeHTTP(c *Context, w http.ResponseWriter, r *http.Re
 		g.log.Error("Plugin failed to ServeHTTP, RPC call failed", mlog.Err(err))
 		http.Error(w, "500 internal server error", http.StatusInternalServerError)
 	}
-	return
 }
 
 func (s *hooksRPCServer) ServeHTTP(args *Z_ServeHTTPArgs, returns *struct{}) error {

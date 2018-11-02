@@ -218,15 +218,10 @@ func TestListCommands(t *testing.T) {
 	Client := th.Client
 
 	enableCommands := *th.App.Config().ServiceSettings.EnableCommands
-	enableOnlyAdminIntegrations := *th.App.Config().ServiceSettings.EnableOnlyAdminIntegrations
 	defer func() {
 		th.App.UpdateConfig(func(cfg *model.Config) { cfg.ServiceSettings.EnableCommands = &enableCommands })
-		th.App.UpdateConfig(func(cfg *model.Config) {
-			cfg.ServiceSettings.EnableOnlyAdminIntegrations = &enableOnlyAdminIntegrations
-		})
 	}()
 	th.App.UpdateConfig(func(cfg *model.Config) { *cfg.ServiceSettings.EnableCommands = true })
-	th.App.UpdateConfig(func(cfg *model.Config) { *cfg.ServiceSettings.EnableOnlyAdminIntegrations = true })
 
 	newCmd := &model.Command{
 		CreatorId: th.BasicUser.Id,
@@ -491,6 +486,7 @@ func TestExecuteGetCommand(t *testing.T) {
 
 		require.Equal(t, token, values.Get("token"))
 		require.Equal(t, th.BasicTeam.Name, values.Get("team_domain"))
+		require.Equal(t, "ourCommand", values.Get("cmd"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(expectedCommandResponse.ToJson()))
@@ -500,7 +496,7 @@ func TestExecuteGetCommand(t *testing.T) {
 	getCmd := &model.Command{
 		CreatorId: th.BasicUser.Id,
 		TeamId:    th.BasicTeam.Id,
-		URL:       ts.URL,
+		URL:       ts.URL + "/?cmd=ourCommand",
 		Method:    model.COMMAND_METHOD_GET,
 		Trigger:   "getcommand",
 		Token:     token,

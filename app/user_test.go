@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/c3systems/c3-sdk-go-example-mattermost/einterfaces"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
@@ -113,6 +114,25 @@ func TestCreateProfileImage(t *testing.T) {
 	if img.At(1, 1) != colorful {
 		t.Fatal("Failed to create correct color")
 	}
+}
+
+func TestSetDefaultProfileImage(t *testing.T) {
+	th := Setup().InitBasic()
+	defer th.TearDown()
+
+	err := th.App.SetDefaultProfileImage(&model.User{
+		Id:       model.NewId(),
+		Username: "notvaliduser",
+	})
+	require.Error(t, err)
+
+	user := th.BasicUser
+
+	err = th.App.SetDefaultProfileImage(user)
+	require.Nil(t, err)
+
+	user = getUserFromDB(th.App, user.Id, t)
+	assert.Equal(t, int64(0), user.LastPictureUpdate)
 }
 
 func TestUpdateUserToRestrictedDomain(t *testing.T) {
@@ -249,12 +269,12 @@ func TestUpdateOAuthUserAttrs(t *testing.T) {
 }
 
 func getUserFromDB(a *App, id string, t *testing.T) *model.User {
-	if user, err := a.GetUser(id); err != nil {
+	user, err := a.GetUser(id)
+	if err != nil {
 		t.Fatal("user is not found", err)
 		return nil
-	} else {
-		return user
 	}
+	return user
 }
 
 func getGitlabUserPayload(gitlabUser oauthgitlab.GitLabUser, t *testing.T) []byte {
@@ -523,4 +543,44 @@ func TestPermanentDeleteUser(t *testing.T) {
 		t.Log(err)
 		t.Fatal("GetFileInfo after DeleteUser is nil")
 	}
+}
+
+func TestRecordUserTermsOfServiceAction(t *testing.T) {
+	th := Setup().InitBasic()
+	defer th.TearDown()
+
+	user := &model.User{
+		Email:       strings.ToLower(model.NewId()) + "success+test@example.com",
+		Nickname:    "Luke Skywalker", // trying to bring balance to the "Force", one test user at a time
+		Username:    "luke" + model.NewId(),
+		Password:    "passwd1",
+		AuthService: "",
+	}
+	user, err := th.App.CreateUser(user)
+	if err != nil {
+		t.Fatalf("failed to create user: %v", err)
+	}
+
+	defer th.App.PermanentDeleteUser(user)
+
+	termsOfService, err := th.App.CreateTermsOfService("text", user.Id)
+	if err != nil {
+		t.Fatalf("failed to create terms of service: %v", err)
+	}
+
+	err = th.App.RecordUserTermsOfServiceAction(user.Id, termsOfService.Id, true)
+	if err != nil {
+		t.Fatalf("failed to record user action: %v", err)
+	}
+
+	nuser, err := th.App.GetUser(user.Id)
+	assert.Equal(t, termsOfService.Id, nuser.AcceptedTermsOfServiceId)
+
+	err = th.App.RecordUserTermsOfServiceAction(user.Id, termsOfService.Id, false)
+	if err != nil {
+		t.Fatalf("failed to record user action: %v", err)
+	}
+
+	nuser, err = th.App.GetUser(user.Id)
+	assert.Empty(t, nuser.AcceptedTermsOfServiceId)
 }

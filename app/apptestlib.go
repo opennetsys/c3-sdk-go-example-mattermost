@@ -6,6 +6,7 @@ package app
 import (
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -19,6 +20,7 @@ import (
 	"github.com/c3systems/c3-sdk-go-example-mattermost/store/sqlstore"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/store/storetest"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils/testutils"
 )
 
 type TestHelper struct {
@@ -33,6 +35,8 @@ type TestHelper struct {
 
 	tempConfigPath string
 	tempWorkspace  string
+
+	MockedHTTPService *testutils.MockedHTTPService
 }
 
 type persistentTestStore struct {
@@ -159,6 +163,13 @@ func (me *TestHelper) InitSystemAdmin() *TestHelper {
 	me.SystemAdminUser = me.CreateUser()
 	me.App.UpdateUserRoles(me.SystemAdminUser.Id, model.SYSTEM_USER_ROLE_ID+" "+model.SYSTEM_ADMIN_ROLE_ID, false)
 	me.SystemAdminUser, _ = me.App.GetUser(me.SystemAdminUser.Id)
+
+	return me
+}
+
+func (me *TestHelper) MockHTTPService(handler http.Handler) *TestHelper {
+	me.MockedHTTPService = testutils.MakeMockedHTTPService(handler)
+	me.App.HTTPService = me.MockedHTTPService
 
 	return me
 }

@@ -9,8 +9,8 @@ import (
 
 	"time"
 
-	"github.com/go-redis/redis"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/go-redis/redis"
 )
 
 const REDIS_EXPIRY_TIME = 30 * time.Minute

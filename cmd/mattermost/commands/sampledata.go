@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icrowley/fake"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
+	"github.com/icrowley/fake"
 	"github.com/spf13/cobra"
 )
 
@@ -57,6 +57,15 @@ func randomPastTime(seconds int) int64 {
 	now := time.Now()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.FixedZone("UTC", 0))
 	return (today.Unix() * 1000) - int64(rand.Intn(seconds*1000))
+}
+
+func sortedRandomDates(size int) []int64 {
+	dates := make([]int64, size)
+	for i := 0; i < size; i++ {
+		dates[i] = randomPastTime(50000)
+	}
+	sort.Slice(dates, func(a, b int) bool { return dates[a] < dates[b] })
+	return dates
 }
 
 func randomEmoji() string {
@@ -274,8 +283,10 @@ func sampleDataCmdF(command *cobra.Command, args []string) error {
 
 	for team, channels := range teamsAndChannels {
 		for _, channel := range channels {
+			dates := sortedRandomDates(postsPerChannel)
+
 			for i := 0; i < postsPerChannel; i++ {
-				postLine := createPost(team, channel, allUsers)
+				postLine := createPost(team, channel, allUsers, dates[i])
 				encoder.Encode(postLine)
 			}
 		}
@@ -286,8 +297,10 @@ func sampleDataCmdF(command *cobra.Command, args []string) error {
 		user2 := allUsers[rand.Intn(len(allUsers))]
 		channelLine := createDirectChannel([]string{user1, user2})
 		encoder.Encode(channelLine)
+
+		dates := sortedRandomDates(postsPerDirectChannel)
 		for j := 0; j < postsPerDirectChannel; j++ {
-			postLine := createDirectPost([]string{user1, user2})
+			postLine := createDirectPost([]string{user1, user2}, dates[j])
 			encoder.Encode(postLine)
 		}
 	}
@@ -303,8 +316,10 @@ func sampleDataCmdF(command *cobra.Command, args []string) error {
 		}
 		channelLine := createDirectChannel(users)
 		encoder.Encode(channelLine)
+
+		dates := sortedRandomDates(postsPerGroupChannel)
 		for j := 0; j < postsPerGroupChannel; j++ {
-			postLine := createDirectPost(users)
+			postLine := createDirectPost(users, dates[j])
 			encoder.Encode(postLine)
 		}
 	}
@@ -529,9 +544,9 @@ func createChannel(idx int, teamName string) app.LineImportData {
 	}
 }
 
-func createPost(team string, channel string, allUsers []string) app.LineImportData {
+func createPost(team string, channel string, allUsers []string, createAt int64) app.LineImportData {
 	message := randomMessage(allUsers)
-	create_at := randomPastTime(50000)
+	create_at := createAt
 	user := allUsers[rand.Intn(len(allUsers))]
 
 	// Some messages are flagged by an user
@@ -589,9 +604,9 @@ func createDirectChannel(members []string) app.LineImportData {
 	}
 }
 
-func createDirectPost(members []string) app.LineImportData {
+func createDirectPost(members []string, createAt int64) app.LineImportData {
 	message := randomMessage(members)
-	create_at := randomPastTime(50000)
+	create_at := createAt
 	user := members[rand.Intn(len(members))]
 
 	// Some messages are flagged by an user

@@ -9,12 +9,13 @@ import (
 	"strings"
 
 	"bytes"
-	"github.com/gorilla/mux"
+	"io/ioutil"
+
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
-	"io/ioutil"
+	"github.com/gorilla/mux"
 )
 
 func (a *App) ServePluginRequest(w http.ResponseWriter, r *http.Request) {

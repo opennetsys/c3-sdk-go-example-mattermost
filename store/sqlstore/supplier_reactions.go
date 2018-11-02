@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mattermost/gorp"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
+	"github.com/mattermost/gorp"
 )
 
 func initSqlSupplierReactions(sqlStore SqlStore) {

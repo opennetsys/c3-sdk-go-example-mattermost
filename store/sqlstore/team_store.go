@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mattermost/gorp"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
+	"github.com/mattermost/gorp"
 )
 
 const (
@@ -851,7 +851,7 @@ func (s SqlTeamStore) ClearAllCustomRoleAssignments() store.StoreChannel {
 		lastUserId := strings.Repeat("0", 26)
 		lastTeamId := strings.Repeat("0", 26)
 
-		for true {
+		for {
 			var transaction *gorp.Transaction
 			var err error
 
@@ -911,5 +911,72 @@ func (s SqlTeamStore) ClearAllCustomRoleAssignments() store.StoreChannel {
 				return
 			}
 		}
+	})
+}
+
+func (s SqlTeamStore) AnalyticsGetTeamCountForScheme(schemeId string) store.StoreChannel {
+	return store.Do(func(result *store.StoreResult) {
+		count, err := s.GetReplica().SelectInt("SELECT count(*) FROM Teams WHERE SchemeId = :SchemeId AND DeleteAt = 0", map[string]interface{}{"SchemeId": schemeId})
+		if err != nil {
+			result.Err = model.NewAppError("SqlTeamStore.AnalyticsGetTeamCountForScheme", "store.sql_team.analytics_get_team_count_for_scheme.app_error", nil, "schemeId="+schemeId+" "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		result.Data = count
+	})
+}
+
+func (s SqlTeamStore) GetAllForExportAfter(limit int, afterId string) store.StoreChannel {
+	return store.Do(func(result *store.StoreResult) {
+		var data []*model.TeamForExport
+		if _, err := s.GetReplica().Select(&data, `
+			SELECT
+				Teams.*,
+				Schemes.Name as SchemeName
+			FROM
+				Teams
+			LEFT JOIN
+				Schemes ON Teams.SchemeId = Schemes.Id
+			WHERE
+				Teams.Id > :AfterId
+			ORDER BY
+				Id
+			LIMIT
+				:Limit`,
+			map[string]interface{}{"AfterId": afterId, "Limit": limit}); err != nil {
+			result.Err = model.NewAppError("SqlTeamStore.GetAllTeams", "store.sql_team.get_all.app_error", nil, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		for _, team := range data {
+			if len(team.InviteId) == 0 {
+				team.InviteId = team.Id
+			}
+		}
+
+		result.Data = data
+	})
+}
+
+func (s SqlTeamStore) GetTeamMembersForExport(userId string) store.StoreChannel {
+	return store.Do(func(result *store.StoreResult) {
+		var members []*model.TeamMemberForExport
+		_, err := s.GetReplica().Select(&members, `
+	SELECT
+		TeamMembers.*,
+		Teams.Name as TeamName
+	FROM
+		TeamMembers
+	INNER JOIN
+		Teams ON TeamMembers.TeamId = Teams.Id
+	WHERE
+		TeamMembers.UserId = :UserId
+		AND Teams.DeleteAt = 0`,
+			map[string]interface{}{"UserId": userId})
+		if err != nil {
+			result.Err = model.NewAppError("SqlTeamStore.GetTeamMembersForExport", "store.sql_team.get_members.app_error", nil, "userId="+userId+" "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		result.Data = members
 	})
 }

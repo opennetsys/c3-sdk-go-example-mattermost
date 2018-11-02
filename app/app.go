@@ -7,15 +7,14 @@ import (
 	"crypto/ecdsa"
 	"fmt"
 	"html/template"
-	"net"
 	"net/http"
 	"path"
 	"reflect"
 	"strconv"
-	"strings"
 	"sync"
 	"sync/atomic"
 
+	"github.com/c3systems/c3-sdk-go-example-mattermost/services/httpservice"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"github.com/throttled/throttled"
@@ -51,6 +50,8 @@ type App struct {
 
 	Hubs                        []*Hub
 	HubsStopCheckingForDeadlock chan bool
+
+	PushNotificationsHub PushNotificationsHub
 
 	Jobs *jobs.JobServer
 
@@ -100,6 +101,8 @@ type App struct {
 	diagnosticId        string
 
 	phase2PermissionsMigrationComplete bool
+
+	HTTPService httpservice.HTTPService
 }
 
 var appCount = 0
@@ -125,6 +128,12 @@ func New(options ...Option) (outApp *App, outErr error) {
 		clientConfig:     make(map[string]string),
 		licenseListeners: map[string]func(){},
 	}
+
+	app.HTTPService = httpservice.MakeHTTPService(app)
+
+	app.CreatePushNotificationsHub()
+	app.StartPushNotificationsHubWorkers()
+
 	defer func() {
 		if outErr != nil {
 			app.Shutdown()
@@ -209,6 +218,7 @@ func New(options ...Option) (outApp *App, outErr error) {
 	}
 
 	app.Srv.Store = app.newStore()
+
 	if err := app.ensureAsymmetricSigningKey(); err != nil {
 		return nil, errors.Wrapf(err, "unable to ensure asymmetric signing key")
 	}
@@ -226,6 +236,7 @@ func New(options ...Option) (outApp *App, outErr error) {
 	})
 
 	app.clusterLeaderListenerId = app.AddClusterLeaderChangedListener(func() {
+		mlog.Info("Cluster leader changed. Determining if job schedulers should be running:", mlog.Bool("isLeader", app.IsLeader()))
 		app.Jobs.Schedulers.HandleClusterLeaderChange(app.IsLeader())
 	})
 
@@ -265,6 +276,7 @@ func (a *App) Shutdown() {
 
 	a.StopServer()
 	a.HubStop()
+	a.StopPushNotificationsHubWorkers()
 
 	a.ShutDownPlugins()
 	a.WaitForGoroutines()
@@ -285,6 +297,8 @@ func (a *App) Shutdown() {
 	mlog.Info("Server stopped")
 
 	a.DisableConfigWatch()
+
+	a.HTTPService.Close()
 }
 
 var accountMigrationInterface func(*App) einterfaces.AccountMigrationInterface
@@ -505,43 +519,6 @@ func (a *App) HTMLTemplates() *template.Template {
 	return nil
 }
 
-func (a *App) HTTPClient(trustURLs bool) *http.Client {
-	insecure := a.Config().ServiceSettings.EnableInsecureOutgoingConnections != nil && *a.Config().ServiceSettings.EnableInsecureOutgoingConnections
-
-	if trustURLs {
-		return utils.NewHTTPClient(insecure, nil, nil)
-	}
-
-	allowHost := func(host string) bool {
-		if a.Config().ServiceSettings.AllowedUntrustedInternalConnections == nil {
-			return false
-		}
-		for _, allowed := range strings.Fields(*a.Config().ServiceSettings.AllowedUntrustedInternalConnections) {
-			if host == allowed {
-				return true
-			}
-		}
-		return false
-	}
-
-	allowIP := func(ip net.IP) bool {
-		if !utils.IsReservedIP(ip) {
-			return true
-		}
-		if a.Config().ServiceSettings.AllowedUntrustedInternalConnections == nil {
-			return false
-		}
-		for _, allowed := range strings.Fields(*a.Config().ServiceSettings.AllowedUntrustedInternalConnections) {
-			if _, ipRange, err := net.ParseCIDR(allowed); err == nil && ipRange.Contains(ip) {
-				return true
-			}
-		}
-		return false
-	}
-
-	return utils.NewHTTPClient(insecure, allowHost, allowIP)
-}
-
 func (a *App) Handle404(w http.ResponseWriter, r *http.Request) {
 	err := model.NewAppError("Handle404", "api.context.404.app_error", nil, "", http.StatusNotFound)
 
@@ -594,7 +571,7 @@ func (a *App) DoAdvancedPermissionsMigration() {
 	}
 
 	config := a.Config()
-	if *config.ServiceSettings.AllowEditPost == model.ALLOW_EDIT_POST_ALWAYS {
+	if *config.ServiceSettings.DEPRECATED_DO_NOT_USE_AllowEditPost == model.ALLOW_EDIT_POST_ALWAYS {
 		*config.ServiceSettings.PostEditTimeLimit = -1
 		if err := a.SaveConfig(config, true); err != nil {
 			mlog.Error("Failed to update config in Advanced Permissions Phase 1 Migration.", mlog.String("error", err.Error()))
@@ -634,7 +611,7 @@ func (a *App) DoEmojisPermissionsMigration() {
 	var err *model.AppError = nil
 
 	mlog.Info("Migrating emojis config to database.")
-	switch *a.Config().ServiceSettings.RestrictCustomEmojiCreation {
+	switch *a.Config().ServiceSettings.DEPRECATED_DO_NOT_USE_RestrictCustomEmojiCreation {
 	case model.RESTRICT_EMOJI_CREATION_ALL:
 		role, err = a.GetRoleByName(model.SYSTEM_USER_ROLE_ID)
 		if err != nil {
@@ -642,7 +619,6 @@ func (a *App) DoEmojisPermissionsMigration() {
 			mlog.Critical(err.Error())
 			return
 		}
-		break
 	case model.RESTRICT_EMOJI_CREATION_ADMIN:
 		role, err = a.GetRoleByName(model.TEAM_ADMIN_ROLE_ID)
 		if err != nil {
@@ -650,10 +626,8 @@ func (a *App) DoEmojisPermissionsMigration() {
 			mlog.Critical(err.Error())
 			return
 		}
-		break
 	case model.RESTRICT_EMOJI_CREATION_SYSTEM_ADMIN:
 		role = nil
-		break
 	default:
 		mlog.Critical("Failed to migrate emojis creation permissions from mattermost config.")
 		mlog.Critical("Invalid restrict emoji creation setting")
@@ -703,13 +677,13 @@ func (a *App) StartElasticsearch() {
 	})
 
 	a.AddConfigListener(func(oldConfig *model.Config, newConfig *model.Config) {
-		if *oldConfig.ElasticsearchSettings.EnableIndexing == false && *newConfig.ElasticsearchSettings.EnableIndexing == true {
+		if !*oldConfig.ElasticsearchSettings.EnableIndexing && *newConfig.ElasticsearchSettings.EnableIndexing {
 			a.Go(func() {
 				if err := a.Elasticsearch.Start(); err != nil {
 					mlog.Error(err.Error())
 				}
 			})
-		} else if *oldConfig.ElasticsearchSettings.EnableIndexing == true && *newConfig.ElasticsearchSettings.EnableIndexing == false {
+		} else if *oldConfig.ElasticsearchSettings.EnableIndexing && !*newConfig.ElasticsearchSettings.EnableIndexing {
 			a.Go(func() {
 				if err := a.Elasticsearch.Stop(); err != nil {
 					mlog.Error(err.Error())
@@ -717,7 +691,7 @@ func (a *App) StartElasticsearch() {
 			})
 		} else if *oldConfig.ElasticsearchSettings.Password != *newConfig.ElasticsearchSettings.Password || *oldConfig.ElasticsearchSettings.Username != *newConfig.ElasticsearchSettings.Username || *oldConfig.ElasticsearchSettings.ConnectionUrl != *newConfig.ElasticsearchSettings.ConnectionUrl || *oldConfig.ElasticsearchSettings.Sniff != *newConfig.ElasticsearchSettings.Sniff {
 			a.Go(func() {
-				if *oldConfig.ElasticsearchSettings.EnableIndexing == true {
+				if *oldConfig.ElasticsearchSettings.EnableIndexing {
 					if err := a.Elasticsearch.Stop(); err != nil {
 						mlog.Error(err.Error())
 					}

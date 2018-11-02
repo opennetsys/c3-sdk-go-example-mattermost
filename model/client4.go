@@ -397,12 +397,28 @@ func (c *Client4) GetTotalUsersStatsRoute() string {
 	return fmt.Sprintf(c.GetUsersRoute() + "/stats")
 }
 
+func (c *Client4) GetRedirectLocationRoute() string {
+	return fmt.Sprintf("/redirect_location")
+}
+
+func (c *Client4) GetRegisterTermsOfServiceRoute(userId string) string {
+	return c.GetUserRoute(userId) + "/terms_of_service"
+}
+
+func (c *Client4) GetTermsOfServiceRoute() string {
+	return "/terms_of_service"
+}
+
 func (c *Client4) DoApiGet(url string, etag string) (*http.Response, *AppError) {
 	return c.DoApiRequest(http.MethodGet, c.ApiUrl+url, "", etag)
 }
 
 func (c *Client4) DoApiPost(url string, data string) (*http.Response, *AppError) {
 	return c.DoApiRequest(http.MethodPost, c.ApiUrl+url, data, "")
+}
+
+func (c *Client4) doApiPostBytes(url string, data []byte) (*http.Response, *AppError) {
+	return c.doApiRequestBytes(http.MethodPost, c.ApiUrl+url, data, "")
 }
 
 func (c *Client4) DoApiPut(url string, data string) (*http.Response, *AppError) {
@@ -414,7 +430,15 @@ func (c *Client4) DoApiDelete(url string) (*http.Response, *AppError) {
 }
 
 func (c *Client4) DoApiRequest(method, url, data, etag string) (*http.Response, *AppError) {
-	rq, _ := http.NewRequest(method, url, strings.NewReader(data))
+	return c.doApiRequestReader(method, url, strings.NewReader(data), etag)
+}
+
+func (c *Client4) doApiRequestBytes(method, url string, data []byte, etag string) (*http.Response, *AppError) {
+	return c.doApiRequestReader(method, url, bytes.NewReader(data), etag)
+}
+
+func (c *Client4) doApiRequestReader(method, url string, data io.Reader, etag string) (*http.Response, *AppError) {
+	rq, _ := http.NewRequest(method, url, data)
 
 	if len(etag) > 0 {
 		rq.Header.Set(HEADER_ETAG_CLIENT, etag)
@@ -679,8 +703,8 @@ func (c *Client4) GetUserByEmail(email, etag string) (*User, *Response) {
 }
 
 // AutocompleteUsersInTeam returns the users on a team based on search term.
-func (c *Client4) AutocompleteUsersInTeam(teamId string, username string, etag string) (*UserAutocomplete, *Response) {
-	query := fmt.Sprintf("?in_team=%v&name=%v", teamId, username)
+func (c *Client4) AutocompleteUsersInTeam(teamId string, username string, limit int, etag string) (*UserAutocomplete, *Response) {
+	query := fmt.Sprintf("?in_team=%v&name=%v&limit=%d", teamId, username, limit)
 	if r, err := c.DoApiGet(c.GetUsersRoute()+"/autocomplete"+query, etag); err != nil {
 		return nil, BuildErrorResponse(r, err)
 	} else {
@@ -690,8 +714,8 @@ func (c *Client4) AutocompleteUsersInTeam(teamId string, username string, etag s
 }
 
 // AutocompleteUsersInChannel returns the users in a channel based on search term.
-func (c *Client4) AutocompleteUsersInChannel(teamId string, channelId string, username string, etag string) (*UserAutocomplete, *Response) {
-	query := fmt.Sprintf("?in_team=%v&in_channel=%v&name=%v", teamId, channelId, username)
+func (c *Client4) AutocompleteUsersInChannel(teamId string, channelId string, username string, limit int, etag string) (*UserAutocomplete, *Response) {
+	query := fmt.Sprintf("?in_team=%v&in_channel=%v&name=%v&limit=%d", teamId, channelId, username, limit)
 	if r, err := c.DoApiGet(c.GetUsersRoute()+"/autocomplete"+query, etag); err != nil {
 		return nil, BuildErrorResponse(r, err)
 	} else {
@@ -701,8 +725,8 @@ func (c *Client4) AutocompleteUsersInChannel(teamId string, channelId string, us
 }
 
 // AutocompleteUsers returns the users in the system based on search term.
-func (c *Client4) AutocompleteUsers(username string, etag string) (*UserAutocomplete, *Response) {
-	query := fmt.Sprintf("?name=%v", username)
+func (c *Client4) AutocompleteUsers(username string, limit int, etag string) (*UserAutocomplete, *Response) {
+	query := fmt.Sprintf("?name=%v&limit=%d", username, limit)
 	if r, err := c.DoApiGet(c.GetUsersRoute()+"/autocomplete"+query, etag); err != nil {
 		return nil, BuildErrorResponse(r, err)
 	} else {
@@ -711,7 +735,23 @@ func (c *Client4) AutocompleteUsers(username string, etag string) (*UserAutocomp
 	}
 }
 
-// GetProfileImage gets user's profile image. Must be logged in or be a system administrator.
+// GetDefaultProfileImage gets the default user's profile image. Must be logged in.
+func (c *Client4) GetDefaultProfileImage(userId string) ([]byte, *Response) {
+	r, appErr := c.DoApiGet(c.GetUserRoute(userId)+"/image/default", "")
+	if appErr != nil {
+		return nil, BuildErrorResponse(r, appErr)
+	}
+	defer closeBody(r)
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, BuildErrorResponse(r, NewAppError("GetDefaultProfileImage", "model.client.read_file.app_error", nil, err.Error(), r.StatusCode))
+	}
+
+	return data, BuildResponse(r)
+}
+
+// GetProfileImage gets user's profile image. Must be logged in.
 func (c *Client4) GetProfileImage(userId, etag string) ([]byte, *Response) {
 	if r, err := c.DoApiGet(c.GetUserRoute(userId)+"/image", etag); err != nil {
 		return nil, BuildErrorResponse(r, err)
@@ -792,7 +832,7 @@ func (c *Client4) GetUsersInChannel(channelId string, page int, perPage int, eta
 	}
 }
 
-// GetUsersInChannelStatus returns a page of users in a channel. Page counting starts at 0. Sorted by Status
+// GetUsersInChannelByStatus returns a page of users in a channel. Page counting starts at 0. Sorted by Status
 func (c *Client4) GetUsersInChannelByStatus(channelId string, page int, perPage int, etag string) ([]*User, *Response) {
 	query := fmt.Sprintf("?in_channel=%v&page=%v&per_page=%v&sort=status", channelId, page, perPage)
 	if r, err := c.DoApiGet(c.GetUsersRoute()+query, etag); err != nil {
@@ -847,7 +887,7 @@ func (c *Client4) GetUsersByUsernames(usernames []string) ([]*User, *Response) {
 
 // SearchUsers returns a list of users based on some search criteria.
 func (c *Client4) SearchUsers(search *UserSearch) ([]*User, *Response) {
-	if r, err := c.DoApiPost(c.GetUsersRoute()+"/search", search.ToJson()); err != nil {
+	if r, err := c.doApiPostBytes(c.GetUsersRoute()+"/search", search.ToJson()); err != nil {
 		return nil, BuildErrorResponse(r, err)
 	} else {
 		defer closeBody(r)
@@ -1091,6 +1131,15 @@ func (c *Client4) SendVerificationEmail(email string) (bool, *Response) {
 		defer closeBody(r)
 		return CheckStatusOK(r), BuildResponse(r)
 	}
+}
+
+// SetDefaultProfileImage resets the profile image to a default generated one
+func (c *Client4) SetDefaultProfileImage(userId string) (bool, *Response) {
+	r, err := c.DoApiDelete(c.GetUserRoute(userId) + "/image")
+	if err != nil {
+		return false, BuildErrorResponse(r, err)
+	}
+	return CheckStatusOK(r), BuildResponse(r)
 }
 
 // SetProfileImage sets profile image of the user
@@ -1709,6 +1758,17 @@ func (c *Client4) GetChannelStats(channelId string, etag string) (*ChannelStats,
 	}
 }
 
+// GetChannelMembersTimezones gets a list of timezones for a channel.
+func (c *Client4) GetChannelMembersTimezones(channelId string) ([]string, *Response) {
+	r, err := c.DoApiGet(c.GetChannelRoute(channelId)+"/timezones", "")
+	if err != nil {
+		return nil, BuildErrorResponse(r, err)
+	}
+
+	defer closeBody(r)
+	return ArrayFromJson(r.Body), BuildResponse(r)
+}
+
 // GetPinnedPosts gets a list of pinned posts.
 func (c *Client4) GetPinnedPosts(channelId string, etag string) (*PostList, *Response) {
 	if r, err := c.DoApiGet(c.GetChannelRoute(channelId)+"/pinned", etag); err != nil {
@@ -1957,6 +2017,17 @@ func (c *Client4) AutocompleteChannelsForTeam(teamId, name string) (*ChannelList
 	}
 }
 
+// AutocompleteChannelsForTeamForSearch will return an ordered list of your channels autocomplete suggestions
+func (c *Client4) AutocompleteChannelsForTeamForSearch(teamId, name string) (*ChannelList, *Response) {
+	query := fmt.Sprintf("?name=%v", name)
+	if r, err := c.DoApiGet(c.GetChannelsForTeamRoute(teamId)+"/search_autocomplete"+query, ""); err != nil {
+		return nil, BuildErrorResponse(r, err)
+	} else {
+		defer closeBody(r)
+		return ChannelListFromJson(r.Body), BuildResponse(r)
+	}
+}
+
 // Post Section
 
 // CreatePost creates a post based on the provided post struct.
@@ -2136,19 +2207,16 @@ func (c *Client4) GetPostsBefore(channelId, postId string, page, perPage int, et
 
 // SearchPosts returns any posts with matching terms string.
 func (c *Client4) SearchPosts(teamId string, terms string, isOrSearch bool) (*PostList, *Response) {
-	requestBody := map[string]interface{}{"terms": terms, "is_or_search": isOrSearch}
-	if r, err := c.DoApiPost(c.GetTeamRoute(teamId)+"/posts/search", StringInterfaceToJson(requestBody)); err != nil {
-		return nil, BuildErrorResponse(r, err)
-	} else {
-		defer closeBody(r)
-		return PostListFromJson(r.Body), BuildResponse(r)
+	params := SearchParameter{
+		Terms:      &terms,
+		IsOrSearch: &isOrSearch,
 	}
+	return c.SearchPostsWithParams(teamId, &params)
 }
 
-// SearchPosts returns any posts with matching terms string including deleted channels.
-func (c *Client4) SearchPostsIncludeDeletedChannels(teamId string, terms string, isOrSearch bool) (*PostList, *Response) {
-	requestBody := map[string]interface{}{"terms": terms, "is_or_search": isOrSearch}
-	if r, err := c.DoApiPost(c.GetTeamRoute(teamId)+"/posts/search?include_deleted_channels=true", StringInterfaceToJson(requestBody)); err != nil {
+// SearchPosts returns any posts with matching terms string.
+func (c *Client4) SearchPostsWithParams(teamId string, params *SearchParameter) (*PostList, *Response) {
+	if r, err := c.DoApiPost(c.GetTeamRoute(teamId)+"/posts/search", params.SearchParameterToJson()); err != nil {
 		return nil, BuildErrorResponse(r, err)
 	} else {
 		defer closeBody(r)
@@ -2941,6 +3009,16 @@ func (c *Client4) GetBrandImage() ([]byte, *Response) {
 	}
 }
 
+func (c *Client4) DeleteBrandImage() *Response {
+	r, err := c.DoApiDelete(c.GetBrandRoute() + "/image")
+
+	if err != nil {
+		return BuildErrorResponse(r, err)
+	}
+
+	return BuildResponse(r)
+}
+
 // UploadBrandImage sets the brand image for the system.
 func (c *Client4) UploadBrandImage(data []byte) (bool, *Response) {
 	body := &bytes.Buffer{}
@@ -3289,19 +3367,6 @@ func (c *Client4) UpdateUserStatus(userId string, userStatus *Status) (*Status, 
 		defer closeBody(r)
 		return StatusFromJson(r.Body), BuildResponse(r)
 
-	}
-}
-
-// Webrtc Section
-
-// GetWebrtcToken returns a valid token, stun server and turn server with credentials to
-// use with the Mattermost WebRTC service.
-func (c *Client4) GetWebrtcToken() (*WebrtcInfoResponse, *Response) {
-	if r, err := c.DoApiGet("/webrtc/token", ""); err != nil {
-		return nil, BuildErrorResponse(r, err)
-	} else {
-		defer closeBody(r)
-		return WebrtcInfoResponseFromJson(r.Body), BuildResponse(r)
 	}
 }
 
@@ -3769,5 +3834,51 @@ func (c *Client4) UpdateTeamScheme(teamId, schemeId string) (bool, *Response) {
 	} else {
 		defer closeBody(r)
 		return CheckStatusOK(r), BuildResponse(r)
+	}
+}
+
+// GetRedirectLocation retrieves the value of the 'Location' header of an HTTP response for a given URL.
+func (c *Client4) GetRedirectLocation(urlParam, etag string) (string, *Response) {
+	url := fmt.Sprintf("%s?url=%s", c.GetRedirectLocationRoute(), url.QueryEscape(urlParam))
+	if r, err := c.DoApiGet(url, etag); err != nil {
+		return "", BuildErrorResponse(r, err)
+	} else {
+		defer closeBody(r)
+		return MapFromJson(r.Body)["location"], BuildResponse(r)
+	}
+}
+
+func (c *Client4) RegisteTermsOfServiceAction(userId, termsOfServiceId string, accepted bool) (*bool, *Response) {
+	url := c.GetRegisterTermsOfServiceRoute(userId)
+	data := map[string]interface{}{"termsOfServiceId": termsOfServiceId, "accepted": accepted}
+
+	if r, err := c.DoApiPost(url, StringInterfaceToJson(data)); err != nil {
+		return nil, BuildErrorResponse(r, err)
+	} else {
+		defer closeBody(r)
+		return NewBool(CheckStatusOK(r)), BuildResponse(r)
+	}
+}
+
+func (c *Client4) GetTermsOfService(etag string) (*TermsOfService, *Response) {
+	url := c.GetTermsOfServiceRoute()
+
+	if r, err := c.DoApiGet(url, etag); err != nil {
+		return nil, BuildErrorResponse(r, err)
+	} else {
+		defer closeBody(r)
+		return TermsOfServiceFromJson(r.Body), BuildResponse(r)
+	}
+}
+
+func (c *Client4) CreateTermsOfService(text, userId string) (*TermsOfService, *Response) {
+	url := c.GetTermsOfServiceRoute()
+
+	data := map[string]string{"text": text}
+	if r, err := c.DoApiPost(url, MapToJson(data)); err != nil {
+		return nil, BuildErrorResponse(r, err)
+	} else {
+		defer closeBody(r)
+		return TermsOfServiceFromJson(r.Body), BuildResponse(r)
 	}
 }

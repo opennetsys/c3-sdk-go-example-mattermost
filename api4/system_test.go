@@ -3,6 +3,7 @@ package api4
 import (
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
@@ -217,10 +218,9 @@ func TestGetOldClientConfig(t *testing.T) {
 	testKey := "supersecretkey"
 	th.App.UpdateConfig(func(cfg *model.Config) { cfg.ServiceSettings.GoogleDeveloperKey = testKey })
 
-	t.Run("with session, without limited config", func(t *testing.T) {
+	t.Run("with session", func(t *testing.T) {
 		th.App.UpdateConfig(func(cfg *model.Config) {
 			cfg.ServiceSettings.GoogleDeveloperKey = testKey
-			*cfg.ServiceSettings.ExperimentalLimitClientConfig = false
 		})
 
 		Client := th.Client
@@ -237,50 +237,9 @@ func TestGetOldClientConfig(t *testing.T) {
 		}
 	})
 
-	t.Run("without session, without limited config", func(t *testing.T) {
+	t.Run("without session", func(t *testing.T) {
 		th.App.UpdateConfig(func(cfg *model.Config) {
 			cfg.ServiceSettings.GoogleDeveloperKey = testKey
-			*cfg.ServiceSettings.ExperimentalLimitClientConfig = false
-		})
-
-		Client := th.CreateClient()
-
-		config, resp := Client.GetOldClientConfig("")
-		CheckNoError(t, resp)
-
-		if len(config["Version"]) == 0 {
-			t.Fatal("config not returned correctly")
-		}
-
-		if config["GoogleDeveloperKey"] != testKey {
-			t.Fatal("config missing developer key")
-		}
-	})
-
-	t.Run("with session, with limited config", func(t *testing.T) {
-		th.App.UpdateConfig(func(cfg *model.Config) {
-			cfg.ServiceSettings.GoogleDeveloperKey = testKey
-			*cfg.ServiceSettings.ExperimentalLimitClientConfig = true
-		})
-
-		Client := th.Client
-
-		config, resp := Client.GetOldClientConfig("")
-		CheckNoError(t, resp)
-
-		if len(config["Version"]) == 0 {
-			t.Fatal("config not returned correctly")
-		}
-
-		if config["GoogleDeveloperKey"] != testKey {
-			t.Fatal("config missing developer key")
-		}
-	})
-
-	t.Run("without session, without limited config", func(t *testing.T) {
-		th.App.UpdateConfig(func(cfg *model.Config) {
-			cfg.ServiceSettings.GoogleDeveloperKey = testKey
-			*cfg.ServiceSettings.ExperimentalLimitClientConfig = true
 		})
 
 		Client := th.CreateClient()
@@ -699,4 +658,56 @@ func TestSupportedTimezones(t *testing.T) {
 
 	CheckNoError(t, resp)
 	assert.Equal(t, supportedTimezonesFromConfig, supportedTimezones)
+}
+
+func TestRedirectLocation(t *testing.T) {
+	expected := "https://mattermost.com/wp-content/themes/mattermostv2/img/logo-light.svg"
+
+	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		res.Header().Set("Location", expected)
+		res.WriteHeader(http.StatusFound)
+		res.Write([]byte("body"))
+	}))
+	defer func() { testServer.Close() }()
+
+	mockBitlyLink := testServer.URL
+
+	th := Setup().InitBasic().InitSystemAdmin()
+	defer th.TearDown()
+	Client := th.Client
+	enableLinkPreviews := *th.App.Config().ServiceSettings.EnableLinkPreviews
+	defer func() {
+		th.App.UpdateConfig(func(cfg *model.Config) { *cfg.ServiceSettings.EnableLinkPreviews = enableLinkPreviews })
+	}()
+
+	*th.App.Config().ServiceSettings.EnableLinkPreviews = true
+
+	_, resp := th.SystemAdminClient.GetRedirectLocation("https://mattermost.com/", "")
+	CheckNoError(t, resp)
+
+	_, resp = th.SystemAdminClient.GetRedirectLocation("", "")
+	CheckBadRequestStatus(t, resp)
+
+	actual, resp := th.SystemAdminClient.GetRedirectLocation(mockBitlyLink, "")
+	CheckNoError(t, resp)
+	if actual != expected {
+		t.Errorf("Expected %v but got %v.", expected, actual)
+	}
+
+	*th.App.Config().ServiceSettings.EnableLinkPreviews = false
+	actual, resp = th.SystemAdminClient.GetRedirectLocation("https://mattermost.com/", "")
+	CheckNoError(t, resp)
+	assert.Equal(t, actual, "")
+
+	actual, resp = th.SystemAdminClient.GetRedirectLocation("", "")
+	CheckNoError(t, resp)
+	assert.Equal(t, actual, "")
+
+	actual, resp = th.SystemAdminClient.GetRedirectLocation(mockBitlyLink, "")
+	CheckNoError(t, resp)
+	assert.Equal(t, actual, "")
+
+	Client.Logout()
+	_, resp = Client.GetRedirectLocation("", "")
+	CheckUnauthorizedStatus(t, resp)
 }
