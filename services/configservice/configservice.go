@@ -4,7 +4,7 @@
 package configservice
 
 import (
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 // An interface representing something that contains a Config, such as the app.App struct

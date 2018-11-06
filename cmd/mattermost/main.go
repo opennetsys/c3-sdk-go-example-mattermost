@@ -6,13 +6,13 @@ package main
 import (
 	"os"
 
-	"github.com/mattermost/mattermost-server/cmd/mattermost/commands"
+	"github.com/c3systems/mattermost-server/cmd/mattermost/commands"
 
 	// Plugins
-	_ "github.com/mattermost/mattermost-server/model/gitlab"
+	_ "github.com/c3systems/mattermost-server/model/gitlab"
 
 	// Enterprise Imports
-	_ "github.com/mattermost/mattermost-server/imports"
+	_ "github.com/c3systems/mattermost-server/imports"
 
 	// Enterprise Deps
 	_ "github.com/dgryski/dgoogauth"

@@ -6,7 +6,7 @@ package api4
 import (
 	"testing"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 func TestHelpCommand(t *testing.T) {

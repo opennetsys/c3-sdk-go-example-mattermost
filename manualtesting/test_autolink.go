@@ -6,8 +6,8 @@ package manualtesting
 import (
 	"net/http"
 
-	"github.com/mattermost/mattermost-server/mlog"
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/mlog"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 const LINK_POST_TEXT = `

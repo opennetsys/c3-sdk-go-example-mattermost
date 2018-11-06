@@ -4,8 +4,8 @@
 package commands
 
 import (
-	"github.com/mattermost/mattermost-server/app"
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/app"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 func getTeamsFromTeamArgs(a *app.App, teamArgs []string) []*model.Team {

@@ -4,10 +4,10 @@
 package migrations
 
 import (
-	"github.com/mattermost/mattermost-server/app"
-	tjobs "github.com/mattermost/mattermost-server/jobs/interfaces"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/store"
+	"github.com/c3systems/mattermost-server/app"
+	tjobs "github.com/c3systems/mattermost-server/jobs/interfaces"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/store"
 )
 
 const (

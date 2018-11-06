@@ -1,7 +1,7 @@
 package sqlstore
 
 import (
-	"github.com/mattermost/mattermost-server/store/storetest"
+	"github.com/c3systems/mattermost-server/store/storetest"
 	"testing"
 )
 

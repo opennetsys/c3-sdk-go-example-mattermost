@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/mattermost/mattermost-server/mlog"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/services/filesstore"
+	"github.com/c3systems/mattermost-server/mlog"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/services/filesstore"
 )
 
 func (api *API) InitSystem() {

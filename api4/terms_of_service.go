@@ -4,8 +4,8 @@
 package api4
 
 import (
-	"github.com/mattermost/mattermost-server/app"
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/app"
+	"github.com/c3systems/mattermost-server/model"
 	"net/http"
 )
 

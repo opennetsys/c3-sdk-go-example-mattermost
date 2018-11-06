@@ -8,7 +8,7 @@ import (
 
 	"time"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 func TestClusterDiscoveryService(t *testing.T) {

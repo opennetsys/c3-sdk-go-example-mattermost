@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/model"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )

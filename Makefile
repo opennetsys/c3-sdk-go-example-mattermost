@@ -1,4 +1,4 @@
-.PHONY: build package run stop run-client run-server stop-client stop-server restart restart-server restart-client start-docker clean-dist clean nuke check-style check-client-style check-server-style check-unit-tests test dist setup-mac prepare-enteprise run-client-tests setup-run-client-tests cleanup-run-client-tests test-client build-linux build-osx build-windows internal-test-web-client vet run-server-for-web-client-tests
+.PHONY: build package run stop run-client run-server stop-client stop-server restart restart-server restart-client start-docker clean-dist clean nuke check-style check-client-style check-server-style check-unit-tests test dist setup-mac prepare-enteprise run-client-tests setup-run-client-tests cleanup-run-client-tests test-client build-linux build-osx build-windows internal-test-web-client vet run-server-for-web-client-tests wait dump sort-dump clean-dump tar-data get-state untar-data pg-restore set-state source-globals
 
 ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -46,13 +46,12 @@ endif
 GOPATH ?= $(shell go env GOPATH)
 GOFLAGS ?= $(GOFLAGS:)
 GO=go
-DELVE=dlv
 GO_LINKER_FLAGS ?= -ldflags \
-				   "-X github.com/mattermost/mattermost-server/model.BuildNumber=$(BUILD_NUMBER)\
-				    -X 'github.com/mattermost/mattermost-server/model.BuildDate=$(BUILD_DATE)'\
-				    -X github.com/mattermost/mattermost-server/model.BuildHash=$(BUILD_HASH)\
-				    -X github.com/mattermost/mattermost-server/model.BuildHashEnterprise=$(BUILD_HASH_ENTERPRISE)\
-				    -X github.com/mattermost/mattermost-server/model.BuildEnterpriseReady=$(BUILD_ENTERPRISE_READY)"
+				   "-X github.com/c3systems/c3-sdk-go-example-mattermost/model.BuildNumber=$(BUILD_NUMBER)\
+				    -X 'github.com/c3systems/c3-sdk-go-example-mattermost/model.BuildDate=$(BUILD_DATE)'\
+				    -X github.com/c3systems/c3-sdk-go-example-mattermost/model.BuildHash=$(BUILD_HASH)\
+				    -X github.com/c3systems/c3-sdk-go-example-mattermost/model.BuildHashEnterprise=$(BUILD_HASH_ENTERPRISE)\
+				    -X github.com/c3systems/c3-sdk-go-example-mattermost/model.BuildEnterpriseReady=$(BUILD_ENTERPRISE_READY)"
 
 # GOOS/GOARCH of the build host, used to determine whether we're cross-compiling or not
 BUILDER_GOOS_GOARCH="$(shell $(GO) env GOOS)_$(shell $(GO) env GOARCH)"
@@ -102,40 +101,10 @@ include build/*.mk
 start-docker: ## Starts the docker containers for local development.
 	@echo Starting docker containers
 
-	@if [ $(shell docker ps -a | grep -ci mattermost-mysql) -eq 0 ]; then \
-		echo starting mattermost-mysql; \
-		docker run --name mattermost-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=mostest \
-		-e MYSQL_USER=mmuser -e MYSQL_PASSWORD=mostest -e MYSQL_DATABASE=mattermost_test -d mysql:5.7 > /dev/null; \
-	elif [ $(shell docker ps | grep -ci mattermost-mysql) -eq 0 ]; then \
-		echo restarting mattermost-mysql; \
-		docker start mattermost-mysql > /dev/null; \
-	fi
-
 	@if [ $(shell docker ps -a | grep -ci mattermost-postgres) -eq 0 ]; then \
 		echo starting mattermost-postgres; \
-		docker run --name mattermost-postgres -p 5432:5432 -e POSTGRES_USER=mmuser -e POSTGRES_PASSWORD=mostest -e POSTGRES_DB=mattermost_test \
+		docker run --name mattermost-postgres -p 5433:5432 -e POSTGRES_USER=mmuser -e POSTGRES_PASSWORD=mostest -e POSTGRES_DB=mattermost_test \
 		-d postgres:9.4 > /dev/null; \
-	elif [ $(shell docker ps | grep -ci mattermost-postgres) -eq 0 ]; then \
-		echo restarting mattermost-postgres; \
-		docker start mattermost-postgres > /dev/null; \
-	fi
-
-	@if [ $(shell docker ps -a | grep -ci mattermost-inbucket) -eq 0 ]; then \
-		echo starting mattermost-inbucket; \
-		docker run --name mattermost-inbucket -p 9000:10080 -p 2500:10025 -d jhillyerd/inbucket:release-1.2.0 > /dev/null; \
-	elif [ $(shell docker ps | grep -ci mattermost-inbucket) -eq 0 ]; then \
-		echo restarting mattermost-inbucket; \
-		docker start mattermost-inbucket > /dev/null; \
-	fi
-
-	@if [ $(shell docker ps -a | grep -ci mattermost-minio) -eq 0 ]; then \
-		echo starting mattermost-minio; \
-		docker run --name mattermost-minio -p 9001:9000 -e "MINIO_ACCESS_KEY=minioaccesskey" \
-		-e "MINIO_SECRET_KEY=miniosecretkey" -d minio/minio:RELEASE.2018-05-25T19-49-13Z server /data > /dev/null; \
-		docker exec -it mattermost-minio /bin/sh -c "mkdir -p /data/mattermost-test" > /dev/null; \
-	elif [ $(shell docker ps | grep -ci mattermost-minio) -eq 0 ]; then \
-		echo restarting mattermost-minio; \
-		docker start mattermost-minio > /dev/null; \
 	fi
 
 ifeq ($(BUILD_ENTERPRISE_READY),true)
@@ -275,21 +244,9 @@ gofmt: ## Runs gofmt against all packages.
 	done
 	@echo "gofmt success"; \
 
-megacheck: ## Run megacheck on codebasis
-	go get honnef.co/go/tools/cmd/megacheck
-	$(GOPATH)/bin/megacheck $(TE_PACKAGES)
-
-ifeq ($(BUILD_ENTERPRISE_READY),true)
-	$(GOPATH)/bin/megacheck $(EE_PACKAGES) || exit 1
-endif
-
 store-mocks: ## Creates mock files.
 	go get -u github.com/vektra/mockery/...
 	$(GOPATH)/bin/mockery -dir store -all -output store/storetest/mocks -note 'Regenerate this file using `make store-mocks`.'
-
-filesstore-mocks: ## Creates mock files.
-	go get -u github.com/vektra/mockery/...
-	$(GOPATH)/bin/mockery -dir services/filesstore -all -output services/filesstore/mocks -note 'Regenerate this file using `make filesstore-mocks`.'
 
 ldap-mocks: ## Creates mock files for ldap.
 	go get -u github.com/vektra/mockery/...
@@ -308,7 +265,7 @@ check-licenses: ## Checks license status.
 
 check-prereqs: ## Checks prerequisite software status.
 	./scripts/prereq-check.sh
-
+	
 check-style: govet gofmt check-licenses ## Runs govet and gofmt against all packages.
 
 test-te-race: ## Checks for race conditions in the team edition.
@@ -397,20 +354,11 @@ test-data: start-docker ## Add test data to the local instance.
 	@echo Login with a regular account username=user-1 password=user-1
 	@echo ========================================================================
 
-run-server: start-docker ## Starts the server.
-	@echo Running mattermost for development
+run-server: # start-docker ## Starts the server.
+	@echo Running mattermost for development - old
 
 	mkdir -p $(BUILD_WEBAPP_DIR)/dist/files
 	$(GO) run $(GOFLAGS) $(GO_LINKER_FLAGS) $(PLATFORM_FILES) --disableconfigwatch &
-
-debug-server: start-docker
-	mkdir -p $(BUILD_WEBAPP_DIR)/dist/files
-	$(DELVE) debug $(PLATFORM_FILES) --build-flags="-ldflags '\
-		-X github.com/mattermost/mattermost-server/model.BuildNumber=$(BUILD_NUMBER)\
-		-X \"github.com/mattermost/mattermost-server/model.BuildDate=$(BUILD_DATE)\"\
-		-X github.com/mattermost/mattermost-server/model.BuildHash=$(BUILD_HASH)\
-		-X github.com/mattermost/mattermost-server/model.BuildHashEnterprise=$(BUILD_HASH_ENTERPRISE)\
-		-X github.com/mattermost/mattermost-server/model.BuildEnterpriseReady=$(BUILD_ENTERPRISE_READY)'"
 
 run-cli: start-docker ## Runs CLI.
 	@echo Running mattermost for development
@@ -534,3 +482,44 @@ endif
 ## Help documentatin à la https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' ./Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+wait:
+	@sh ./wait.sh
+
+dump:
+	@rm -rf ./data/pgdump
+	@mkdir -p ./data/pgdump
+	@PGPASSWORD="docker" pg_dump -d mattermost_db -h localhost -p 5432 -U docker > ./data/pgdump/mattermost_db.sql
+
+sort-dump:
+	@python ./pg_dump_splitsort.py ./data/pgdump/mattermost_db.sql
+
+clean-dump:
+	@rm ./data/pgdump/mattermost_db.sql ./data/pgdump/*status.sql
+
+tar-data:
+	@rm ./state.tar
+	@tar -cf ./state.tar ./data
+
+get-state: dump sort-dump clean-dump tar-data
+	@echo "done getting state"
+
+untar-data:
+	rm -rf data
+	@tar -xf ./state.tar
+
+pg-restore:
+	@cat ./data/pgdump/*.sql | PGPASSWORD="docker" psql -d mattermost_db -h localhost -p 5432 -U docker
+
+set-state: untar-data pg-restore
+	@echo "done setting state"
+
+.PHONY: deps
+deps:
+	@echo "running dep ensure..." && \
+	dep ensure -v && \
+	$(MAKE) gxundo
+
+.PHONY: gxundo
+gxundo:
+	@bash scripts/gxundo.sh vendor/

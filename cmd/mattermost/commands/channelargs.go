@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mattermost/mattermost-server/app"
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/app"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 const CHANNEL_ARG_SEPARATOR = ":"

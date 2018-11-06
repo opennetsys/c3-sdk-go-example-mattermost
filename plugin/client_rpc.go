@@ -19,8 +19,8 @@ import (
 	"reflect"
 
 	"github.com/hashicorp/go-plugin"
-	"github.com/mattermost/mattermost-server/mlog"
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/mlog"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 var hookNameToId map[string]int = make(map[string]int)

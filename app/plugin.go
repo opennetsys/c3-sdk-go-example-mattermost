@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mattermost/mattermost-server/mlog"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/plugin"
-	"github.com/mattermost/mattermost-server/utils"
+	"github.com/c3systems/mattermost-server/mlog"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/plugin"
+	"github.com/c3systems/mattermost-server/utils"
 )
 
 func (a *App) SyncPluginsActiveState() {

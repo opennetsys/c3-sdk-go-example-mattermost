@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 func StringInSlice(a string, slice []string) bool {

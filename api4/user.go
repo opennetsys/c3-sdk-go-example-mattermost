@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mattermost/mattermost-server/app"
-	"github.com/mattermost/mattermost-server/mlog"
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/app"
+	"github.com/c3systems/mattermost-server/mlog"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 func (api *API) InitUser() {

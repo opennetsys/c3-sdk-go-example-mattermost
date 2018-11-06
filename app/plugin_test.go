@@ -13,8 +13,8 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/plugin"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/plugin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

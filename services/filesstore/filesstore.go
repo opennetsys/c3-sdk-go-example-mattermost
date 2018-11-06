@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 type FileBackend interface {

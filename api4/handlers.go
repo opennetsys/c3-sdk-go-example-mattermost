@@ -6,7 +6,7 @@ package api4
 import (
 	"net/http"
 
-	"github.com/mattermost/mattermost-server/web"
+	"github.com/c3systems/mattermost-server/web"
 )
 
 type Context = web.Context

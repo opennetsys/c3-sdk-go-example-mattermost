@@ -21,10 +21,10 @@ import (
 
 	"net/http"
 
-	"github.com/mattermost/mattermost-server/einterfaces"
-	"github.com/mattermost/mattermost-server/mlog"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/utils/jsonutils"
+	"github.com/c3systems/mattermost-server/einterfaces"
+	"github.com/c3systems/mattermost-server/mlog"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/utils/jsonutils"
 )
 
 const (

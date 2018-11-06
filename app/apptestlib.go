@@ -13,14 +13,14 @@ import (
 
 	"testing"
 
-	"github.com/mattermost/mattermost-server/einterfaces"
-	"github.com/mattermost/mattermost-server/mlog"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/store"
-	"github.com/mattermost/mattermost-server/store/sqlstore"
-	"github.com/mattermost/mattermost-server/store/storetest"
-	"github.com/mattermost/mattermost-server/utils"
-	"github.com/mattermost/mattermost-server/utils/testutils"
+	"github.com/c3systems/mattermost-server/einterfaces"
+	"github.com/c3systems/mattermost-server/mlog"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/store"
+	"github.com/c3systems/mattermost-server/store/sqlstore"
+	"github.com/c3systems/mattermost-server/store/storetest"
+	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/mattermost-server/utils/testutils"
 )
 
 type TestHelper struct {

@@ -6,7 +6,7 @@ package app
 import (
 	"testing"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/model"
 	"github.com/stretchr/testify/require"
 )
 
@@ -36,8 +36,8 @@ func TestPluginCommand(t *testing.T) {
 			package main
 
 			import (
-				"github.com/mattermost/mattermost-server/plugin"
-				"github.com/mattermost/mattermost-server/model"
+				"github.com/c3systems/mattermost-server/plugin"
+				"github.com/c3systems/mattermost-server/model"
 			)
 
 			type configuration struct {

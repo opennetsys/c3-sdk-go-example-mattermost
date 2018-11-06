@@ -3,7 +3,7 @@
 
 package app
 
-import "github.com/mattermost/mattermost-server/model"
+import "github.com/c3systems/mattermost-server/model"
 
 // Import Data Models
 

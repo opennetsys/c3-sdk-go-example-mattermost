@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/mattermost/mattermost-server/mlog"
+	"github.com/c3systems/mattermost-server/mlog"
 )
 
 func TestLoggingBeforeInitialized(t *testing.T) {

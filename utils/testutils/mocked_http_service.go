@@ -4,7 +4,7 @@
 package testutils
 
 import (
-	"github.com/mattermost/mattermost-server/services/httpservice"
+	"github.com/c3systems/mattermost-server/services/httpservice"
 	"net/http"
 	"net/http/httptest"
 )

@@ -10,8 +10,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/utils"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/utils"
 )
 
 func (a *App) GetSamlMetadata() (string, *model.AppError) {

@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/mattermost/mattermost-server/app"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/web"
+	"github.com/c3systems/mattermost-server/app"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/web"
 
 	_ "github.com/nicksnyder/go-i18n/i18n"
 )

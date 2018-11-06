@@ -5,14 +5,14 @@ package app
 
 import (
 	"crypto/tls"
-	"github.com/mattermost/mattermost-server/utils"
+	"github.com/c3systems/mattermost-server/utils"
 	"net/http"
 	"path"
 	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/model"
 	"github.com/stretchr/testify/require"
 )
 

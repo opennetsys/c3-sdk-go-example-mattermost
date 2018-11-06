@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mattermost/mattermost-server/api4"
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/api4"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 func TestCreateTeam(t *testing.T) {

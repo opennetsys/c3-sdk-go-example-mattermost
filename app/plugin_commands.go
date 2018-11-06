@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/plugin"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/plugin"
 )
 
 type PluginCommand struct {

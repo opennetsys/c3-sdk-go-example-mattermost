@@ -7,7 +7,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/mattermost/mattermost-server/services/configservice"
+	"github.com/c3systems/mattermost-server/services/configservice"
 )
 
 // Wraps the functionality for creating a new http.Client to encapsulate that and allow it to be mocked when testing

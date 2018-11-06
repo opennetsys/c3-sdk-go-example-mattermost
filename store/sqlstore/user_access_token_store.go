@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/mattermost/gorp"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/store"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/store"
 )
 
 type SqlUserAccessTokenStore struct {

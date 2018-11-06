@@ -12,9 +12,9 @@ import (
 	"net/mail"
 	"net/smtp"
 
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/services/filesstore"
-	"github.com/mattermost/mattermost-server/utils"
+	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/services/filesstore"
+	"github.com/c3systems/mattermost-server/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

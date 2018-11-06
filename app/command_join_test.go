@@ -9,7 +9,7 @@ import (
 	"github.com/nicksnyder/go-i18n/i18n"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/c3systems/mattermost-server/model"
 )
 
 func TestJoinCommandNoChannel(t *testing.T) {

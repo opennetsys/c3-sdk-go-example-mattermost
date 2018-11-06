@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
-	"github.com/mattermost/mattermost-server/mlog"
+	"github.com/c3systems/mattermost-server/mlog"
 )
 
 const REDIS_EXPIRY_TIME = 30 * time.Minute

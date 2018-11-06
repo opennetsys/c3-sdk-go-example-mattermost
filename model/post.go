@@ -11,7 +11,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/mattermost/mattermost-server/utils/markdown"
+	"github.com/c3systems/mattermost-server/utils/markdown"
 )
 
 const (
