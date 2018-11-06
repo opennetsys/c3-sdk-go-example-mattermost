@@ -5,18 +5,18 @@ package app
 
 import (
 	"crypto/ecdsa"
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"os/exec"
 	"path"
 	"reflect"
 	"strconv"
 	"sync"
 	"sync/atomic"
-
-	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
-	"github.com/throttled/throttled"
 
 	"github.com/c3systems/mattermost-server/einterfaces"
 	ejobs "github.com/c3systems/mattermost-server/einterfaces/jobs"
@@ -29,6 +29,9 @@ import (
 	"github.com/c3systems/mattermost-server/store"
 	"github.com/c3systems/mattermost-server/store/sqlstore"
 	"github.com/c3systems/mattermost-server/utils"
+	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
+	"github.com/throttled/throttled"
 )
 
 const ADVANCED_PERMISSIONS_MIGRATION_KEY = "AdvancedPermissionsMigrationComplete"
@@ -270,6 +273,26 @@ func (a *App) configOrLicenseListener() {
 }
 
 func (a *App) Shutdown() {
+	globals := utils.Globals{
+		SeqUint64:                 model.SeqUint64,
+		SeqUint64ForPresave:       model.SeqUint64ForPresave,
+		SeqUint64ForPresaveMillis: model.SeqUint64ForPresaveMillis,
+	}
+	d, err := json.Marshal(globals)
+	if err != nil {
+		log.Printf("err marshaling globals\n%v", err)
+	} else {
+		if err = ioutil.WriteFile(utils.GLOBALS_FILE, d, 0644); err != nil {
+			log.Printf("err writing globals file\n%v", err)
+		}
+	}
+
+	cmd := exec.Command("/bin/sh", "./get_state.sh")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Printf("err running get_state\n%v\nnoutput:\n%s", err, string(out))
+	}
+
 	appCount--
 
 	mlog.Info("Stopping Server...")

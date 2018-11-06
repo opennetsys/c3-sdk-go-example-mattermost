@@ -13,6 +13,14 @@ import (
 	"github.com/c3systems/mattermost-server/model"
 )
 
+const GLOBALS_FILE = "data/globals/globals.json"
+
+type Globals struct {
+	SeqUint64                 uint64
+	SeqUint64ForPresave       uint64
+	SeqUint64ForPresaveMillis uint64
+}
+
 func StringInSlice(a string, slice []string) bool {
 	for _, b := range slice {
 		if b == a {

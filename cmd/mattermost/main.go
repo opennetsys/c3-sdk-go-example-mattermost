@@ -21,6 +21,7 @@ import (
 	_ "github.com/c3systems/mattermost-server/imports"      // Enterprise Deps
 	"github.com/c3systems/mattermost-server/model"          // Plugins
 	_ "github.com/c3systems/mattermost-server/model/gitlab" // Enterprise Imports
+	"github.com/c3systems/mattermost-server/utils"
 	_ "github.com/dgryski/dgoogauth"
 	_ "github.com/go-ldap/ldap"
 	_ "github.com/hako/durafmt"
@@ -37,8 +38,7 @@ var client = c3.NewC3()
 //var client *c3.C3
 
 const (
-	key          = "data"
-	GLOBALS_FILE = "./data/globals/globals.json"
+	key = "data"
 )
 
 // App ...
@@ -88,12 +88,12 @@ func (a *App) processReq(reqStr string) error {
 		return err
 	}
 
-	globalBytes, err := ioutil.ReadFile(GLOBALS_FILE)
+	globalBytes, err := ioutil.ReadFile("./../../data/globals/globals.json")
 	if err != nil {
 		log.Printf("err reading global vars file\n%v", err)
 		return err
 	}
-	var globals commands.Globals
+	var globals utils.Globals
 	if err = json.Unmarshal(globalBytes, &globals); err != nil {
 		log.Printf("err unmarshalling globals\n%v", err)
 		return err
@@ -134,10 +134,10 @@ func (a *App) processReq(reqStr string) error {
 	}
 
 	// write the globals to disk
-	if err = os.Remove(GLOBALS_FILE); err != nil {
+	if err = os.Remove("./../../data/globals/globals.json"); err != nil {
 		log.Printf("err removing old globals file\n%v", err)
 	}
-	globals = commands.Globals{
+	globals = utils.Globals{
 		SeqUint64:                 model.SeqUint64,
 		SeqUint64ForPresave:       model.SeqUint64ForPresave,
 		SeqUint64ForPresaveMillis: model.SeqUint64ForPresaveMillis,
@@ -147,7 +147,7 @@ func (a *App) processReq(reqStr string) error {
 		log.Printf("err marshaling globals\n%v", err)
 		return err
 	}
-	if err = ioutil.WriteFile(GLOBALS_FILE, d, 0644); err != nil {
+	if err = ioutil.WriteFile("./../../data/globals/globals.json", d, 0644); err != nil {
 		log.Printf("err writing globals file\n%v", err)
 		return err
 	}

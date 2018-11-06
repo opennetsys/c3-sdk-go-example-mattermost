@@ -147,47 +147,47 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 		manualtesting.Init(api)
 	}
 
-	a.Go(func() {
-		runSecurityJob(a)
-	})
-	a.Go(func() {
-		runDiagnosticsJob(a)
-	})
-	a.Go(func() {
-		runSessionCleanupJob(a)
-	})
-	a.Go(func() {
-		runTokenCleanupJob(a)
-	})
-	a.Go(func() {
-		runCommandWebhookCleanupJob(a)
-	})
+	//a.Go(func() {
+	//runSecurityJob(a)
+	//})
+	//a.Go(func() {
+	//runDiagnosticsJob(a)
+	//})
+	//a.Go(func() {
+	//runSessionCleanupJob(a)
+	//})
+	//a.Go(func() {
+	//runTokenCleanupJob(a)
+	//})
+	//a.Go(func() {
+	//runCommandWebhookCleanupJob(a)
+	//})
 
-	if complianceI := a.Compliance; complianceI != nil {
-		complianceI.StartComplianceDailyJob()
-	}
+	//if complianceI := a.Compliance; complianceI != nil {
+	//complianceI.StartComplianceDailyJob()
+	//}
 
-	if a.Cluster != nil {
-		a.RegisterAllClusterMessageHandlers()
-		a.Cluster.StartInterNodeCommunication()
-	}
+	//if a.Cluster != nil {
+	//a.RegisterAllClusterMessageHandlers()
+	//a.Cluster.StartInterNodeCommunication()
+	//}
 
-	if a.Metrics != nil {
-		a.Metrics.StartServer()
-	}
+	//if a.Metrics != nil {
+	//a.Metrics.StartServer()
+	//}
 
-	if a.Elasticsearch != nil {
-		a.StartElasticsearch()
-	}
+	//if a.Elasticsearch != nil {
+	//a.StartElasticsearch()
+	//}
 
-	if *a.Config().JobSettings.RunJobs {
-		a.Jobs.StartWorkers()
-		defer a.Jobs.StopWorkers()
-	}
-	if *a.Config().JobSettings.RunScheduler {
-		a.Jobs.StartSchedulers()
-		defer a.Jobs.StopSchedulers()
-	}
+	//if *a.Config().JobSettings.RunJobs {
+	//a.Jobs.StartWorkers()
+	//defer a.Jobs.StopWorkers()
+	//}
+	//if *a.Config().JobSettings.RunScheduler {
+	//a.Jobs.StartSchedulers()
+	//defer a.Jobs.StopSchedulers()
+	//}
 
 	notifyReady()
 
@@ -196,13 +196,13 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 	signal.Notify(interruptChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-interruptChan
 
-	if a.Cluster != nil {
-		a.Cluster.StopInterNodeCommunication()
-	}
+	//if a.Cluster != nil {
+	//a.Cluster.StopInterNodeCommunication()
+	//}
 
-	if a.Metrics != nil {
-		a.Metrics.StopServer()
-	}
+	//if a.Metrics != nil {
+	//a.Metrics.StopServer()
+	//}
 
 	return nil
 }
