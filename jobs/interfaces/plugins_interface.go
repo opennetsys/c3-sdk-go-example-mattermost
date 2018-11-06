@@ -3,7 +3,7 @@
 
 package interfaces
 
-import "github.com/c3systems/mattermost-server/model"
+import "github.com/c3systems/c3-sdk-go-example-mattermost/model"
 
 type PluginsJobInterface interface {
 	MakeWorker() model.Worker

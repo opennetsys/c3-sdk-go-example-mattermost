@@ -8,8 +8,8 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/c3systems/mattermost-server/api4"
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/api4"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

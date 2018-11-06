@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
 func TestCreateJob(t *testing.T) {

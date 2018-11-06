@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/store/storetest"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store/storetest"
 )
 
 func TestTeamStore(t *testing.T) {

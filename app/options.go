@@ -4,7 +4,7 @@
 package app
 
 import (
-	"github.com/c3systems/mattermost-server/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
 type Option func(a *App)

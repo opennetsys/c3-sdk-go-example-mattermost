@@ -11,7 +11,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/c3systems/mattermost-server/utils/markdown"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils/markdown"
 )
 
 const (

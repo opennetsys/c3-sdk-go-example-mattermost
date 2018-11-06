@@ -4,10 +4,10 @@
 package commands
 
 import (
-	"github.com/c3systems/mattermost-server/app"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/store"
-	"github.com/c3systems/mattermost-server/store/sqlstore"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store/sqlstore"
 	"github.com/spf13/cobra"
 )
 

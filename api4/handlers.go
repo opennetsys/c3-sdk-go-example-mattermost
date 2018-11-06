@@ -6,7 +6,7 @@ package api4
 import (
 	"net/http"
 
-	"github.com/c3systems/mattermost-server/web"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/web"
 )
 
 type Context = web.Context

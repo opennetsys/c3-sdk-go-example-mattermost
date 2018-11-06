@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 func IsPasswordValid(password string) *model.AppError {

@@ -12,8 +12,8 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
 func TestWebSocket(t *testing.T) {

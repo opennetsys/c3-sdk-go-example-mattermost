@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 const GLOBALS_FILE = "data/globals/globals.json"

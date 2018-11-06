@@ -5,14 +5,14 @@ package app
 
 import (
 	"crypto/tls"
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 	"net/http"
 	"path"
 	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 	"github.com/stretchr/testify/require"
 )
 

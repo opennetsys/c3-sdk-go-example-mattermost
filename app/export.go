@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 func (a *App) BulkExport(writer io.Writer) *model.AppError {

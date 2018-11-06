@@ -17,11 +17,11 @@ import (
 	"time"
 
 	c3 "github.com/c3systems/c3-sdk-go"
-	"github.com/c3systems/mattermost-server/cmd/mattermost/commands"
-	_ "github.com/c3systems/mattermost-server/imports"      // Enterprise Deps
-	"github.com/c3systems/mattermost-server/model"          // Plugins
-	_ "github.com/c3systems/mattermost-server/model/gitlab" // Enterprise Imports
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/cmd/mattermost/commands"
+	_ "github.com/c3systems/c3-sdk-go-example-mattermost/imports"      // Enterprise Deps
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"          // Plugins
+	_ "github.com/c3systems/c3-sdk-go-example-mattermost/model/gitlab" // Enterprise Imports
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 	_ "github.com/dgryski/dgoogauth"
 	_ "github.com/go-ldap/ldap"
 	_ "github.com/hako/durafmt"

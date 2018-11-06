@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/c3systems/mattermost-server/utils/jsonutils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils/jsonutils"
 )
 
 const (

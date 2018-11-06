@@ -4,7 +4,7 @@
 package app
 
 import (
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 func (a *App) CreateTermsOfService(text, userId string) (*model.TermsOfService, *model.AppError) {

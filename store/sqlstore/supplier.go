@@ -15,11 +15,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/c3systems/mattermost-server/einterfaces"
-	"github.com/c3systems/mattermost-server/mlog"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/store"
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/einterfaces"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 	"github.com/go-sql-driver/mysql"
 	"github.com/lib/pq"
 	"github.com/mattermost/gorp"
@@ -97,7 +97,7 @@ type SqlSupplierOldStores struct {
 
 type SqlSupplier struct {
 	// rrCounter and srCounter should be kept first.
-	// See https://github.com/c3systems/mattermost-server/pull/7281
+	// See https://github.com/c3systems/c3-sdk-go-example-mattermost/pull/7281
 	rrCounter      int64
 	srCounter      int64
 	next           store.LayeredStoreSupplier

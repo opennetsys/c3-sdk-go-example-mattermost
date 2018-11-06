@@ -3,7 +3,7 @@
 
 package einterfaces
 
-import "github.com/c3systems/mattermost-server/model"
+import "github.com/c3systems/c3-sdk-go-example-mattermost/model"
 
 type AccountMigrationInterface interface {
 	MigrateToLdap(fromAuthService string, forignUserFieldNameToMatch string, force bool, dryRun bool) *model.AppError

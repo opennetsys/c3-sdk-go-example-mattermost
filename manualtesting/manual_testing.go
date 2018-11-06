@@ -12,12 +12,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/c3systems/mattermost-server/api4"
-	"github.com/c3systems/mattermost-server/app"
-	"github.com/c3systems/mattermost-server/mlog"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/utils"
-	"github.com/c3systems/mattermost-server/web"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/api4"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/web"
 )
 
 type TestEnvironment struct {

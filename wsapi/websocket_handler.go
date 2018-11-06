@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/c3systems/mattermost-server/app"
-	"github.com/c3systems/mattermost-server/mlog"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 func (api *API) ApiWebSocketHandler(wh func(*model.WebSocketRequest) (map[string]interface{}, *model.AppError)) webSocketHandler {

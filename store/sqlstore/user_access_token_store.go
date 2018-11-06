@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/mattermost/gorp"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
 type SqlUserAccessTokenStore struct {

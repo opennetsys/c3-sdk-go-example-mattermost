@@ -4,11 +4,11 @@
 package jobs
 
 import (
-	ejobs "github.com/c3systems/mattermost-server/einterfaces/jobs"
-	tjobs "github.com/c3systems/mattermost-server/jobs/interfaces"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/services/configservice"
-	"github.com/c3systems/mattermost-server/store"
+	ejobs "github.com/c3systems/c3-sdk-go-example-mattermost/einterfaces/jobs"
+	tjobs "github.com/c3systems/c3-sdk-go-example-mattermost/jobs/interfaces"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/services/configservice"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
 )
 
 type JobServer struct {

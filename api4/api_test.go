@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/c3systems/mattermost-server/mlog"
-	"github.com/c3systems/mattermost-server/store/storetest"
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store/storetest"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 func TestMain(m *testing.M) {

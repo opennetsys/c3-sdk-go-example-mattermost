@@ -1,7 +1,7 @@
 package sqlstore
 
 import (
-	"github.com/c3systems/mattermost-server/store/storetest"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store/storetest"
 	"testing"
 )
 

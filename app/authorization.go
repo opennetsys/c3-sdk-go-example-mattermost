@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/c3systems/mattermost-server/mlog"
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 func (a *App) SessionHasPermissionTo(session model.Session, permission *model.Permission) bool {

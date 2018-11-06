@@ -6,7 +6,7 @@ package einterfaces
 import (
 	"context"
 
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 type MessageExportInterface interface {

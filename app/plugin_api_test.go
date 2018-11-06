@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/plugin"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -71,8 +71,8 @@ func TestPluginAPILoadPluginConfiguration(t *testing.T) {
 		package main
 
 		import (
-			"github.com/c3systems/mattermost-server/plugin"
-			"github.com/c3systems/mattermost-server/model"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			"fmt"
 		)
 
@@ -142,8 +142,8 @@ func TestPluginAPILoadPluginConfigurationDefaults(t *testing.T) {
 		package main
 
 		import (
-			"github.com/c3systems/mattermost-server/plugin"
-			"github.com/c3systems/mattermost-server/model"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			"fmt"
 		)
 

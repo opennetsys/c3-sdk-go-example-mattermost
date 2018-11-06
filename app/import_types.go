@@ -3,7 +3,7 @@
 
 package app
 
-import "github.com/c3systems/mattermost-server/model"
+import "github.com/c3systems/c3-sdk-go-example-mattermost/model"
 
 // Import Data Models
 

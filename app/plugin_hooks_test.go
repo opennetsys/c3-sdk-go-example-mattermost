@@ -15,10 +15,10 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/plugin"
-	"github.com/c3systems/mattermost-server/plugin/plugintest"
-	"github.com/c3systems/mattermost-server/plugin/plugintest/mock"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/plugin/plugintest"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/plugin/plugintest/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -74,8 +74,8 @@ func TestHookMessageWillBePosted(t *testing.T) {
 			package main
 
 			import (
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -114,8 +114,8 @@ func TestHookMessageWillBePosted(t *testing.T) {
 			package main
 
 			import (
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -155,8 +155,8 @@ func TestHookMessageWillBePosted(t *testing.T) {
 			package main
 
 			import (
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -201,8 +201,8 @@ func TestHookMessageWillBePosted(t *testing.T) {
 			package main
 
 			import (
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -248,8 +248,8 @@ func TestHookMessageWillBePosted(t *testing.T) {
 			package main
 
 			import (
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -270,8 +270,8 @@ func TestHookMessageWillBePosted(t *testing.T) {
 			package main
 
 			import (
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -318,8 +318,8 @@ func TestHookMessageHasBeenPosted(t *testing.T) {
 		package main
 
 		import (
-			"github.com/c3systems/mattermost-server/plugin"
-			"github.com/c3systems/mattermost-server/model"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 		)
 
 		type MyPlugin struct {
@@ -358,8 +358,8 @@ func TestHookMessageWillBeUpdated(t *testing.T) {
 		package main
 
 		import (
-			"github.com/c3systems/mattermost-server/plugin"
-			"github.com/c3systems/mattermost-server/model"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 		)
 
 		type MyPlugin struct {
@@ -410,8 +410,8 @@ func TestHookMessageHasBeenUpdated(t *testing.T) {
 		package main
 
 		import (
-			"github.com/c3systems/mattermost-server/plugin"
-			"github.com/c3systems/mattermost-server/model"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 		)
 
 		type MyPlugin struct {
@@ -462,8 +462,8 @@ func TestHookFileWillBeUploaded(t *testing.T) {
 
 			import (
 				"io"
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -509,8 +509,8 @@ func TestHookFileWillBeUploaded(t *testing.T) {
 
 			import (
 				"io"
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -558,8 +558,8 @@ func TestHookFileWillBeUploaded(t *testing.T) {
 
 			import (
 				"io"
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -618,8 +618,8 @@ func TestHookFileWillBeUploaded(t *testing.T) {
 			import (
 				"io"
 				"bytes"
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -688,8 +688,8 @@ func TestUserWillLogIn_Blocked(t *testing.T) {
 		package main
 
 		import (
-			"github.com/c3systems/mattermost-server/plugin"
-			"github.com/c3systems/mattermost-server/model"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 		)
 
 		type MyPlugin struct {
@@ -733,8 +733,8 @@ func TestUserWillLogInIn_Passed(t *testing.T) {
 		package main
 
 		import (
-			"github.com/c3systems/mattermost-server/plugin"
-			"github.com/c3systems/mattermost-server/model"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 		)
 
 		type MyPlugin struct {
@@ -778,8 +778,8 @@ func TestUserHasLoggedIn(t *testing.T) {
 		package main
 
 		import (
-			"github.com/c3systems/mattermost-server/plugin"
-			"github.com/c3systems/mattermost-server/model"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+			"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 		)
 
 		type MyPlugin struct {
@@ -829,7 +829,7 @@ func TestErrorString(t *testing.T) {
 			import (
 				"github.com/pkg/errors"
 
-				"github.com/c3systems/mattermost-server/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
 			)
 
 			type MyPlugin struct {
@@ -858,8 +858,8 @@ func TestErrorString(t *testing.T) {
 			package main
 
 			import (
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {

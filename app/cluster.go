@@ -4,8 +4,8 @@
 package app
 
 import (
-	"github.com/c3systems/mattermost-server/mlog"
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 // Registers a given function to be called when the cluster leader may have changed. Returns a unique ID for the

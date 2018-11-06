@@ -7,8 +7,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/store/sqlstore"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store/sqlstore"
 )
 
 func TestGetReplica(t *testing.T) {

@@ -21,10 +21,10 @@ import (
 
 	"net/http"
 
-	"github.com/c3systems/mattermost-server/einterfaces"
-	"github.com/c3systems/mattermost-server/mlog"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/utils/jsonutils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/einterfaces"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils/jsonutils"
 )
 
 const (

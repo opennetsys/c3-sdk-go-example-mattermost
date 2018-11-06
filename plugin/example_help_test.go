@@ -6,8 +6,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/plugin"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
 )
 
 // configuration represents the configuration for this plugin as exposed via the Mattermost

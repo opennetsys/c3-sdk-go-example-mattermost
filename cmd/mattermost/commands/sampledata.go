@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/icrowley/fake"
-	"github.com/c3systems/mattermost-server/app"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
 	"github.com/spf13/cobra"
 )
 

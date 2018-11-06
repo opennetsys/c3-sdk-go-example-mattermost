@@ -10,7 +10,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 func validateSchemeImportData(data *SchemeImportData) *model.AppError {

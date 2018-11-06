@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/c3systems/mattermost-server/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/spf13/cobra"
 )
 

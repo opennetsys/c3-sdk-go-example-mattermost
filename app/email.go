@@ -14,10 +14,10 @@ import (
 	"github.com/throttled/throttled"
 	"github.com/throttled/throttled/store/memstore"
 
-	"github.com/c3systems/mattermost-server/mlog"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/services/mailservice"
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/services/mailservice"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 const (

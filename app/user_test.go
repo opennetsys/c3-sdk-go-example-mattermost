@@ -16,9 +16,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/c3systems/mattermost-server/einterfaces"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/model/gitlab"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/einterfaces"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model/gitlab"
 )
 
 func TestIsUsernameTaken(t *testing.T) {

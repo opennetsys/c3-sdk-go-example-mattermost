@@ -6,7 +6,7 @@ package sqlstore
 import (
 	"testing"
 
-	"github.com/c3systems/mattermost-server/store/storetest"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store/storetest"
 )
 
 func TestPluginStore(t *testing.T) {

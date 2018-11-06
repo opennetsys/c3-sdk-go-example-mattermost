@@ -13,10 +13,10 @@ import (
 
 	"encoding/base64"
 
-	"github.com/c3systems/mattermost-server/app"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/services/mailservice"
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/app"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/services/mailservice"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -7,10 +7,10 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/c3systems/mattermost-server/einterfaces"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/store"
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/einterfaces"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 type SqlFileInfoStore struct {

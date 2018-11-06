@@ -6,7 +6,7 @@ package app
 import (
 	"testing"
 
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 func TestCheckIfRolesGrantPermission(t *testing.T) {

@@ -19,10 +19,10 @@ import (
 	"net/http"
 
 	"github.com/jaytaylor/html2text"
-	"github.com/c3systems/mattermost-server/mlog"
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/services/filesstore"
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/services/filesstore"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 func encodeRFC2047Word(s string) string {

@@ -13,8 +13,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/c3systems/mattermost-server/mlog"
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 const (
@@ -31,7 +31,7 @@ type WebConnActivityMessage struct {
 
 type Hub struct {
 	// connectionCount should be kept first.
-	// See https://github.com/c3systems/mattermost-server/pull/7281
+	// See https://github.com/c3systems/c3-sdk-go-example-mattermost/pull/7281
 	connectionCount int64
 	app             *App
 	connectionIndex int

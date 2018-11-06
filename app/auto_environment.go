@@ -7,8 +7,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/c3systems/mattermost-server/model"
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 type TestEnvironment struct {

@@ -10,7 +10,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/c3systems/mattermost-server/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 )
 
 func TestPluginDeadlock(t *testing.T) {
@@ -22,8 +22,8 @@ func TestPluginDeadlock(t *testing.T) {
 			package main
 
 			import (
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -110,8 +110,8 @@ func TestPluginDeadlock(t *testing.T) {
 			package main
 
 			import (
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {
@@ -145,8 +145,8 @@ func TestPluginDeadlock(t *testing.T) {
 			package main
 
 			import (
-				"github.com/c3systems/mattermost-server/plugin"
-				"github.com/c3systems/mattermost-server/model"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/plugin"
+				"github.com/c3systems/c3-sdk-go-example-mattermost/model"
 			)
 
 			type MyPlugin struct {

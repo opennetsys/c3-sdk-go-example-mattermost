@@ -7,5 +7,5 @@
 // https://godoc.org/github.com/stretchr/testify/mock
 //
 // If you need to import the mock package, you can import it with
-// "github.com/c3systems/mattermost-server/plugin/plugintest/mock".
+// "github.com/c3systems/c3-sdk-go-example-mattermost/plugin/plugintest/mock".
 package plugintest

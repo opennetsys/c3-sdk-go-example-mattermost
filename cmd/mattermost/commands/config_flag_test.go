@@ -13,7 +13,7 @@ import (
 
 	"encoding/json"
 
-	"github.com/c3systems/mattermost-server/utils"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 func TestConfigFlag(t *testing.T) {
