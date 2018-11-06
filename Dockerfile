@@ -1,16 +1,15 @@
-#FROM ubuntu:18.04
-FROM ubuntu
+FROM ubuntu:18.04
+#FROM ubuntu
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:$PATH
 
 RUN mkdir -p /go /go/bin /go/src /go/src/github.com/c3systems/c3-sdk-go-example-mattermost /go/pkg
+RUN apt-get update -y && apt-get upgrade -y
+RUN apt-get install -y --no-install-recommends --fix-missing make curl python gnupg2 dirmngr golang-go
+RUN apt-get autoremove -y
 RUN apt-get update -y --no-install-recommends
-RUN apt-get install -y --no-install-recommends software-properties-common build-essential curl python python3.6 bzr git ca-certificates gnupg2 dirmngr
-RUN apt-get update -y --no-install-recommends
-RUN apt-get install -y --no-install-recommends golang-go
-RUN apt-get remove -y gnupg
 
 # Add the PostgreSQL PGP key to verify their Debian packages.
 # It should be the same key as https://www.postgresql.org/media/keys/ACCC4CF8.asc
