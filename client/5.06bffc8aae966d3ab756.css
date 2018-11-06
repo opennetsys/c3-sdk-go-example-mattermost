@@ -1,0 +1,165 @@
+.gfycat-search {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 7px 1px 7px; }
+  .gfycat-search .search-input {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 29px;
+    padding: 0 27px;
+    font-size: 1.3rem;
+    border-radius: 30px;
+    border-width: 1px;
+    border-style: solid;
+    outline: none;
+    box-shadow: none;
+    z-index: 1;
+    background-color: transparent; }
+  .gfycat-search .search-input::-ms-clear {
+    display: none; }
+  .gfycat-search .search-input-bg {
+    position: absolute;
+    width: calc(100% - 2.4rem);
+    height: 3.3rem;
+    border-radius: .6rem; }
+  .gfycat-search .placeholder {
+    position: absolute;
+    top: 14px;
+    left: 34px;
+    font-size: 13px; }
+  .gfycat-search .ic {
+    position: absolute;
+    top: calc(50% - .3rem); }
+  .gfycat-search .ic-clear-search, .gfycat-search .ic-search {
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    position: absolute;
+    z-index: 1; }
+  .gfycat-search .ic-clear-search {
+    right: 12px;
+    top: 12px;
+    width: 2rem;
+    height: 2rem; }
+  .gfycat-search .ic-search {
+    top: 11px;
+    left: 11px;
+    width: 2.4rem;
+    height: 2.4rem; }
+  .gfycat-search .submit-button {
+    display: none; }
+
+.header-container {
+  z-index: 1;
+  width: 100%; }
+  .header-container .nav-bar {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    position: relative;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-around; }
+    .header-container .nav-bar .ic {
+      cursor: pointer;
+      vertical-align: middle; }
+    .header-container .nav-bar a {
+      align-items: center;
+      display: flex;
+      flex-grow: 1;
+      height: 100%;
+      justify-content: space-around; }
+      .header-container .nav-bar a .header-text {
+        font-family: SFUIDisplay, sans-serif;
+        font-size: 1.6rem;
+        font-weight: 500;
+        padding-left: 1rem;
+        vertical-align: middle; }
+
+.categories-container {
+  position: relative;
+  font-size: 0;
+  padding: 0 .2rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  height: 292px; }
+  .categories-container .category-container {
+    width: 33.33%;
+    display: inline-block;
+    padding: .2rem;
+    box-sizing: border-box; }
+  .categories-container .category {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    padding-bottom: 75%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    border-radius: .6rem;
+    overflow: hidden; }
+  .categories-container .category-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase; }
+
+.search-item-wrapper {
+  width: 50%;
+  position: absolute;
+  border-radius: .6rem;
+  overflow: hidden;
+  box-sizing: border-box; }
+
+.search-item {
+  width: 100%;
+  display: inline-block;
+  background-size: cover;
+  border-radius: .6rem;
+  cursor: pointer; }
+
+.search-grid-container {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  font-size: 0;
+  overflow-x: hidden;
+  height: 336px; }
+
+.empty-search {
+  margin: 2rem auto;
+  font-size: 1.6rem;
+  color: #a0a0a0;
+  text-align: center; }
+  .empty-search a {
+    text-decoration: none; }
+  .empty-search .empty-search-button {
+    display: inline-block;
+    padding: .6rem 1.6rem;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    color: #ffffff;
+    border-radius: .6rem;
+    background-color: #1b70ff; }
+
+.empty-search-image {
+  width: 100%;
+  height: 9rem;
+  margin-bottom: 2rem;
+  background-image: url(/static/files/0bb56288dd2676237f8cd1905602cbea.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain; }
+
