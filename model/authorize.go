@@ -107,7 +107,7 @@ func (ad *AuthData) PreSave() {
 	}
 
 	if ad.CreateAt == 0 {
-		ad.CreateAt = GetMillis()
+		ad.CreateAt = GetMillisForPresave()
 	}
 
 	if len(ad.Scope) == 0 {
@@ -138,5 +138,5 @@ func AuthorizeRequestFromJson(data io.Reader) *AuthorizeRequest {
 }
 
 func (ad *AuthData) IsExpired() bool {
-	return GetMillis() > ad.CreateAt+int64(ad.ExpiresIn*1000)
+	return GetMillisForPresave() > ad.CreateAt+int64(ad.ExpiresIn*1000)
 }

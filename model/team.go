@@ -176,19 +176,19 @@ func (o *Team) IsValid() *AppError {
 
 func (o *Team) PreSave() {
 	if o.Id == "" {
-		o.Id = NewId()
+		o.Id = NewIdForPresave()
 	}
 
-	o.CreateAt = GetMillis()
+	o.CreateAt = GetMillisForPresave()
 	o.UpdateAt = o.CreateAt
 
 	if len(o.InviteId) == 0 {
-		o.InviteId = NewId()
+		o.InviteId = NewIdForPresave()
 	}
 }
 
 func (o *Team) PreUpdate() {
-	o.UpdateAt = GetMillis()
+	o.UpdateAt = GetMillisForPresave()
 }
 
 func IsReservedTeamName(s string) bool {
@@ -239,7 +239,7 @@ func CleanTeamName(s string) string {
 	s = strings.Trim(s, "-")
 
 	if !IsValidTeamName(s) {
-		s = NewId()
+		s = NewIdForPresave()
 	}
 
 	return s

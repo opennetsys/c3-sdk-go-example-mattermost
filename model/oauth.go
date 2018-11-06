@@ -93,20 +93,20 @@ func (a *OAuthApp) IsValid() *AppError {
 // in the CreateAt, UpdateAt times. It should be run before saving the app to the db.
 func (a *OAuthApp) PreSave() {
 	if a.Id == "" {
-		a.Id = NewId()
+		a.Id = NewIdForPresave()
 	}
 
 	if a.ClientSecret == "" {
-		a.ClientSecret = NewId()
+		a.ClientSecret = NewIdForPresave()
 	}
 
-	a.CreateAt = GetMillis()
+	a.CreateAt = GetMillisForPresave()
 	a.UpdateAt = a.CreateAt
 }
 
 // PreUpdate should be run before updating the app in the db.
 func (a *OAuthApp) PreUpdate() {
-	a.UpdateAt = GetMillis()
+	a.UpdateAt = GetMillisForPresave()
 }
 
 func (a *OAuthApp) ToJson() string {

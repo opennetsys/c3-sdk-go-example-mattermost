@@ -160,11 +160,11 @@ func (f *Features) SetDefaults() {
 }
 
 func (l *License) IsExpired() bool {
-	return l.ExpiresAt < GetMillis()
+	return l.ExpiresAt < GetMillisForPresave()
 }
 
 func (l *License) IsStarted() bool {
-	return l.StartsAt < GetMillis()
+	return l.StartsAt < GetMillisForPresave()
 }
 
 func (l *License) ToJson() string {
@@ -175,7 +175,7 @@ func (l *License) ToJson() string {
 // NewTestLicense returns a license that expires in the future and has the given features.
 func NewTestLicense(features ...string) *License {
 	ret := &License{
-		ExpiresAt: GetMillis() + 90*24*60*60*1000,
+		ExpiresAt: GetMillisForPresave() + 90*24*60*60*1000,
 		Customer:  &Customer{},
 		Features:  &Features{},
 	}
@@ -214,5 +214,5 @@ func (lr *LicenseRecord) IsValid() *AppError {
 }
 
 func (lr *LicenseRecord) PreSave() {
-	lr.CreateAt = GetMillis()
+	lr.CreateAt = GetMillisForPresave()
 }

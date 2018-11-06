@@ -68,14 +68,14 @@ func SessionFromJson(data io.Reader) *Session {
 
 func (me *Session) PreSave() {
 	if me.Id == "" {
-		me.Id = NewId()
+		me.Id = NewIdForPresave()
 	}
 
 	if me.Token == "" {
-		me.Token = NewId()
+		me.Token = NewIdForPresave()
 	}
 
-	me.CreateAt = GetMillis()
+	me.CreateAt = GetMillisForPresave()
 	me.LastActivityAt = me.CreateAt
 
 	if me.Props == nil {
@@ -93,7 +93,7 @@ func (me *Session) IsExpired() bool {
 		return false
 	}
 
-	if GetMillis() > me.ExpiresAt {
+	if GetMillisForPresave() > me.ExpiresAt {
 		return true
 	}
 
@@ -102,7 +102,7 @@ func (me *Session) IsExpired() bool {
 
 func (me *Session) SetExpireInDays(days int) {
 	if me.CreateAt == 0 {
-		me.ExpiresAt = GetMillis() + (1000 * 60 * 60 * 24 * int64(days))
+		me.ExpiresAt = GetMillisForPresave() + (1000 * 60 * 60 * 24 * int64(days))
 	} else {
 		me.ExpiresAt = me.CreateAt + (1000 * 60 * 60 * 24 * int64(days))
 	}
@@ -136,7 +136,7 @@ func (me *Session) GetUserRoles() []string {
 }
 
 func (me *Session) GenerateCSRF() string {
-	token := NewId()
+	token := NewIdForPresave()
 	me.AddProp("csrf", token)
 	return token
 }

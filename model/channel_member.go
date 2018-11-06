@@ -120,11 +120,11 @@ func (o *ChannelMember) IsValid() *AppError {
 }
 
 func (o *ChannelMember) PreSave() {
-	o.LastUpdateAt = GetMillis()
+	o.LastUpdateAt = GetMillisForPresave()
 }
 
 func (o *ChannelMember) PreUpdate() {
-	o.LastUpdateAt = GetMillis()
+	o.LastUpdateAt = GetMillisForPresave()
 }
 
 func (o *ChannelMember) GetRoles() []string {

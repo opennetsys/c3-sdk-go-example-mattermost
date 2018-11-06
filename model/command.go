@@ -114,19 +114,19 @@ func (o *Command) IsValid() *AppError {
 
 func (o *Command) PreSave() {
 	if o.Id == "" {
-		o.Id = NewId()
+		o.Id = NewIdForPresave()
 	}
 
 	if o.Token == "" {
-		o.Token = NewId()
+		o.Token = NewIdForPresave()
 	}
 
-	o.CreateAt = GetMillis()
+	o.CreateAt = GetMillisForPresave()
 	o.UpdateAt = o.CreateAt
 }
 
 func (o *Command) PreUpdate() {
-	o.UpdateAt = GetMillis()
+	o.UpdateAt = GetMillisForPresave()
 }
 
 func (o *Command) Sanitize() {

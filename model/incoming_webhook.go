@@ -110,15 +110,15 @@ func (o *IncomingWebhook) IsValid() *AppError {
 
 func (o *IncomingWebhook) PreSave() {
 	if o.Id == "" {
-		o.Id = NewId()
+		o.Id = NewIdForPresave()
 	}
 
-	o.CreateAt = GetMillis()
+	o.CreateAt = GetMillisForPresave()
 	o.UpdateAt = o.CreateAt
 }
 
 func (o *IncomingWebhook) PreUpdate() {
-	o.UpdateAt = GetMillis()
+	o.UpdateAt = GetMillisForPresave()
 }
 
 // escapeControlCharsFromPayload escapes control chars (\n, \t) from a byte slice.
