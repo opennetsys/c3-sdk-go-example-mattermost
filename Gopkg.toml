@@ -25,7 +25,19 @@
 #   unused-packages = true
 
 required = [
-  "github.com/ipfs/go-log"
+  "github.com/satori/go.uuid",
+  "github.com/ipfs/go-verifcid",
+  #"github.com/ipfs/go-log",
+  "github.com/gxed/pubsub",
+  #"github.com/ipfs/go-ipfs-delay",
+  "github.com/ipfs/go-ipfs-exchange-interface",
+  "github.com/ipfs/go-ipfs-flags",
+  "github.com/ipfs/go-ipfs-pq",
+  "github.com/ipfs/go-ipfs-routing/mock",
+  #"github.com/libp2p/go-libp2p-netutil",
+  #"github.com/libp2p/go-testutil",
+  #"github.com/ipfs/go-datastore",
+  #"github.com/libp2p/go-libp2p"
 ]
 
 # To keep us on latest since maintainer stopped releasing versions
@@ -62,9 +74,21 @@ required = [
   name = "github.com/blang/semver"
   version = "~3.5.0"
 
+#[[constraint]]
+  #name = "github.com/c3systems/c3-sdk-go"
+  #version = "0.0.6"
+
 [[constraint]]
-  name = "github.com/c3systems/c3-sdk-go"
-    version = "0.0.6"
+  name = "github.com/c3systems/c3-go"
+  branch = "develop"
+
+[[constraint]]
+  name = "github.com/ipfs/go-verifcid"
+  branch = "master"
+
+[[constraint]]
+  name = "github.com/satori/go.uuid"
+  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
 
 [prune]
   go-tests = true

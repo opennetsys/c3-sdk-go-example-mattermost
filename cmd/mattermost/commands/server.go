@@ -6,6 +6,7 @@ package commands
 import (
 	"fmt"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"os/signal"
@@ -37,6 +38,8 @@ var serverCmd = &cobra.Command{
 	SilenceUsage: true,
 }
 
+var a *app.App
+
 func init() {
 	RootCmd.AddCommand(serverCmd)
 	RootCmd.RunE = serverCmdF
@@ -55,13 +58,18 @@ func serverCmdF(command *cobra.Command, args []string) error {
 	return runServer(config, disableConfigWatch, usedPlatform, interruptChan)
 }
 
+func Serve(w http.ResponseWriter, r *http.Request) {
+	a.Srv.Server.Handler.ServeHTTP(w, r)
+}
+
 func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform bool, interruptChan chan os.Signal) error {
+	var err error
 	options := []app.Option{app.ConfigFile(configFileLocation)}
 	if disableConfigWatch {
 		options = append(options, app.DisableConfigWatch)
 	}
 
-	a, err := app.New(options...)
+	a, err = app.New(options...)
 	if err != nil {
 		mlog.Critical(err.Error())
 		return err

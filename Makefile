@@ -517,7 +517,7 @@ set-state: untar-data pg-restore
 .PHONY: deps
 deps:
 	@echo "running dep ensure..." && \
-	dep ensure -v && \
+	dep ensure -update -v && \
 	$(MAKE) gxundo
 
 .PHONY: gxundo
