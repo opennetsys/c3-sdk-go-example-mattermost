@@ -28,7 +28,6 @@ import (
 	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/web"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/wsapi"
-
 	s3 "github.com/minio/minio-go"
 	"github.com/minio/minio-go/pkg/credentials"
 )
@@ -119,7 +118,7 @@ func setupTestHelper(enterprise bool, updateConfig func(*model.Config)) *TestHel
 	if updateConfig != nil {
 		th.App.UpdateConfig(updateConfig)
 	}
-	serverErr := th.App.StartServer()
+	serverErr := th.App.StartServer(true)
 	if serverErr != nil {
 		panic(serverErr)
 	}

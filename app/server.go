@@ -16,16 +16,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
+	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	"golang.org/x/crypto/acme/autocert"
-
-	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
-	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
-	"github.com/c3systems/c3-sdk-go-example-mattermost/store"
-	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 )
 
 type Server struct {
@@ -84,8 +83,9 @@ func stripPort(hostport string) string {
 	return net.JoinHostPort(host, "443")
 }
 
-func (a *App) StartServer() error {
+func (a *App) StartServer(shouldListen bool) error {
 	mlog.Info("Starting Server...")
+	mlog.Info(fmt.Sprintf("Server should listen: %v", shouldListen))
 
 	var handler http.Handler = a.Srv.RootRouter
 	if allowedOrigins := *a.Config().ServiceSettings.AllowCorsFrom; allowedOrigins != "" {
@@ -138,14 +138,20 @@ func (a *App) StartServer() error {
 		}
 	}
 
-	listener, err := net.Listen("tcp", addr)
-	if err != nil {
-		errors.Wrapf(err, utils.T("api.server.start_server.starting.critical"), err)
-		return err
-	}
-	a.Srv.ListenAddr = listener.Addr().(*net.TCPAddr)
+	var (
+		listener net.Listener
+		err      error
+	)
+	if shouldListen {
+		listener, err = net.Listen("tcp", addr)
+		if err != nil {
+			errors.Wrapf(err, utils.T("api.server.start_server.starting.critical"), err)
+			return err
+		}
+		a.Srv.ListenAddr = listener.Addr().(*net.TCPAddr)
 
-	mlog.Info(fmt.Sprintf("Server is listening on %v", listener.Addr().String()))
+		mlog.Info(fmt.Sprintf("Server is listening on %v", listener.Addr().String()))
+	}
 
 	// Migration from old let's encrypt library
 	if *a.Config().ServiceSettings.UseLetsEncrypt {
@@ -173,7 +179,10 @@ func (a *App) StartServer() error {
 					Handler:  m.HTTPHandler(nil),
 					ErrorLog: a.Log.StdLog(mlog.String("source", "le_forwarder_server")),
 				}
-				go server.ListenAndServe()
+				if shouldListen {
+					mlog.Info("ListenAndServe")
+					go server.ListenAndServe()
+				}
 			} else {
 				go func() {
 					redirectListener, err := net.Listen("tcp", httpListenAddress)
@@ -187,7 +196,10 @@ func (a *App) StartServer() error {
 						Handler:  http.HandlerFunc(handleHTTPRedirect),
 						ErrorLog: a.Log.StdLog(mlog.String("source", "forwarder_server")),
 					}
-					server.Serve(redirectListener)
+					if shouldListen {
+						mlog.Info("Serve")
+						server.Serve(redirectListener)
+					}
 				}()
 			}
 		}
@@ -258,9 +270,15 @@ func (a *App) StartServer() error {
 			}
 
 			a.Srv.Server.TLSConfig = tlsConfig
-			err = a.Srv.Server.ServeTLS(listener, certFile, keyFile)
+			if shouldListen {
+				mlog.Info("ServeTLS")
+				err = a.Srv.Server.ServeTLS(listener, certFile, keyFile)
+			}
 		} else {
-			err = a.Srv.Server.Serve(listener)
+			if shouldListen {
+				mlog.Info("Not TLS Serve")
+				err = a.Srv.Server.Serve(listener)
+			}
 		}
 
 		if err != nil && err != http.ErrServerClosed {

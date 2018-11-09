@@ -53,16 +53,19 @@ func serverCmdF(command *cobra.Command, args []string) error {
 
 	disableConfigWatch, _ := command.Flags().GetBool("disableconfigwatch")
 	usedPlatform, _ := command.Flags().GetBool("platform")
+	// note: we want the default to be to listen, hence the negative "NotListen" here...
+	shouldNotListen, _ := command.Flags().GetBool("shouldNotListen")
+	mlog.Info(fmt.Sprintf("should not listen: %v", shouldNotListen))
 
 	interruptChan := make(chan os.Signal, 1)
-	return runServer(config, disableConfigWatch, usedPlatform, interruptChan)
+	return runServer(config, disableConfigWatch, usedPlatform, interruptChan, !shouldNotListen)
 }
 
 func Serve(w http.ResponseWriter, r *http.Request) {
 	a.Srv.Server.Handler.ServeHTTP(w, r)
 }
 
-func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform bool, interruptChan chan os.Signal) error {
+func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform bool, interruptChan chan os.Signal, shouldListen bool) error {
 	var err error
 	options := []app.Option{app.ConfigFile(configFileLocation)}
 	if disableConfigWatch {
@@ -116,7 +119,8 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 		}
 	})
 
-	serverErr := a.StartServer()
+	mlog.Info(fmt.Sprintf("Should listen: %v", shouldListen))
+	serverErr := a.StartServer(shouldListen)
 	if serverErr != nil {
 		mlog.Critical(serverErr.Error())
 		return serverErr

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-
 	"os/signal"
 	"syscall"
 
@@ -53,7 +52,7 @@ func webClientTestsCmdF(command *cobra.Command, args []string) error {
 	defer a.Shutdown()
 
 	utils.InitTranslations(a.Config().LocalizationSettings)
-	serverErr := a.StartServer()
+	serverErr := a.StartServer(true)
 	if serverErr != nil {
 		return serverErr
 	}
@@ -74,7 +73,7 @@ func serverForWebClientTestsCmdF(command *cobra.Command, args []string) error {
 	defer a.Shutdown()
 
 	utils.InitTranslations(a.Config().LocalizationSettings)
-	serverErr := a.StartServer()
+	serverErr := a.StartServer(true)
 	if serverErr != nil {
 		return serverErr
 	}
