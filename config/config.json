@@ -125,7 +125,7 @@
     },
     "SqlSettings": {
         "DriverName": "postgres",
-        "DataSource": "postgres://docker:docker@localhost:5432/mattermost_test?sslmode=disable",
+        "DataSource": "postgres://docker:docker@localhost:5432/mattermost_db?sslmode=disable",
         "DataSourceReplicas": [],
         "DataSourceSearchReplicas": [],
         "MaxIdleConns": 20,
