@@ -5,6 +5,7 @@ package commands
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -18,7 +19,6 @@ import (
 	"github.com/c3systems/c3-sdk-go-example-mattermost/manualtesting"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/mlog"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/model"
-	"github.com/c3systems/c3-sdk-go-example-mattermost/services/mailservice"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/utils"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/web"
 	"github.com/c3systems/c3-sdk-go-example-mattermost/wsapi"
@@ -46,6 +46,7 @@ func init() {
 }
 
 func serverCmdF(command *cobra.Command, args []string) error {
+	log.Printf("in serverCmdf")
 	config, err := command.Flags().GetString("config")
 	if err != nil {
 		return err
@@ -66,26 +67,32 @@ func Serve(w http.ResponseWriter, r *http.Request) {
 }
 
 func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform bool, interruptChan chan os.Signal, shouldListen bool) error {
+	log.Printf("in run server")
 	var err error
 	options := []app.Option{app.ConfigFile(configFileLocation)}
 	if disableConfigWatch {
 		options = append(options, app.DisableConfigWatch)
 	}
 
+	log.Println("app.New")
 	a, err = app.New(options...)
 	if err != nil {
+		log.Printf("err in app.New")
 		mlog.Critical(err.Error())
 		return err
 	}
 	defer a.Shutdown()
 
-	mailservice.TestConnection(a.Config())
+	log.Println("test mail service")
+	// mailservice.TestConnection(a.Config())
 
+	log.Println("os.Getwd")
 	pwd, _ := os.Getwd()
 	if usedPlatform {
 		mlog.Error("The platform binary has been deprecated, please switch to using the mattermost binary.")
 	}
 
+	log.Println("url.ParseRequestURI")
 	if _, err := url.ParseRequestURI(*a.Config().ServiceSettings.SiteURL); err != nil {
 		mlog.Error("SiteURL must be set. Some features will operate incorrectly if the SiteURL is not set. See documentation for details: http://about.mattermost.com/default-site-url")
 	}
@@ -95,6 +102,7 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 	mlog.Info(fmt.Sprintf("Current working directory is %v", pwd))
 	mlog.Info(fmt.Sprintf("Loaded config file from %v", utils.FindConfigFile(configFileLocation)))
 
+	log.Println("fileBackend")
 	backend, appErr := a.FileBackend()
 	if appErr == nil {
 		appErr = backend.TestConnection()
@@ -107,9 +115,11 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 		a.LoadLicense()
 	}
 
+	log.Println("migrations")
 	a.DoAdvancedPermissionsMigration()
 	a.DoEmojisPermissionsMigration()
 
+	log.Println("plugins")
 	a.InitPlugins(*a.Config().PluginSettings.Directory, *a.Config().PluginSettings.ClientDirectory)
 	a.AddConfigListener(func(prevCfg, cfg *model.Config) {
 		if *cfg.PluginSettings.Enable {
@@ -119,17 +129,19 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 		}
 	})
 
-	mlog.Info(fmt.Sprintf("Should listen: %v", shouldListen))
+	mlog.Info(fmt.Sprintf("\n\n\nhere\n\n\nShould listen: %v", shouldListen))
 	serverErr := a.StartServer(shouldListen)
 	if serverErr != nil {
 		mlog.Critical(serverErr.Error())
 		return serverErr
 	}
 
+	log.Println("api4 init")
 	api := api4.Init(a, a.Srv.Router)
 	wsapi.Init(a, a.Srv.WebSocketRouter)
 	web.NewWeb(a, a.Srv.Router)
 
+	log.Println("license")
 	license := a.License()
 
 	if license == nil && len(a.Config().SqlSettings.DataSourceReplicas) > 1 {
@@ -145,6 +157,7 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 		})
 	}
 
+	log.Println("reload config")
 	a.ReloadConfig()
 
 	// Enable developer settings if this is a "dev" build
@@ -152,6 +165,7 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 		a.UpdateConfig(func(cfg *model.Config) { *cfg.ServiceSettings.EnableDeveloper = true })
 	}
 
+	log.Println("reset uses")
 	resetStatuses(a)
 
 	// If we allow testing then listen for manual testing URL hits
@@ -201,6 +215,7 @@ func runServer(configFileLocation string, disableConfigWatch bool, usedPlatform 
 	//defer a.Jobs.StopSchedulers()
 	//}
 
+	log.Println("\n\n\nREADY...\n\n\n")
 	notifyReady()
 
 	// wait for kill signal before attempting to gracefully shutdown

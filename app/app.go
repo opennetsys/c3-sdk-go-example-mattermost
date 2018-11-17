@@ -113,6 +113,7 @@ var appCount = 0
 // New creates a new App. You must call Shutdown when you're done with it.
 // XXX: For now, only one at a time is allowed as some resources are still shared.
 func New(options ...Option) (outApp *App, outErr error) {
+	log.Println("in app.new")
 	appCount++
 	if appCount > 1 {
 		panic("Only one App should exist at a time. Did you forget to call Shutdown()?")
@@ -132,8 +133,10 @@ func New(options ...Option) (outApp *App, outErr error) {
 		licenseListeners: map[string]func(){},
 	}
 
+	log.Println("make http service")
 	app.HTTPService = httpservice.MakeHTTPService(app)
 
+	log.Println("create notifications")
 	app.CreatePushNotificationsHub()
 	app.StartPushNotificationsHubWorkers()
 
@@ -143,10 +146,12 @@ func New(options ...Option) (outApp *App, outErr error) {
 		}
 	}()
 
+	log.Println("option loop")
 	for _, option := range options {
 		option(app)
 	}
 
+	log.Println("utils")
 	if utils.T == nil {
 		if err := utils.TranslationsPreInit(); err != nil {
 			return nil, errors.Wrapf(err, "unable to load Mattermost translation files")
@@ -154,31 +159,39 @@ func New(options ...Option) (outApp *App, outErr error) {
 	}
 	model.AppErrorInit(utils.T)
 
+	log.Println("load config")
 	if err := app.LoadConfig(app.configFile); err != nil {
 		return nil, err
 	}
 
 	// Initalize logging
+	log.Println("init log")
 	app.Log = mlog.NewLogger(utils.MloggerConfigFromLoggerConfig(&app.Config().LogSettings))
 
 	// Redirect default golang logger to this logger
+	log.Println("redirect log")
 	mlog.RedirectStdLog(app.Log)
 
 	// Use this app logger as the global logger (eventually remove all instances of global logging)
+	log.Println("init global logger")
 	mlog.InitGlobalLogger(app.Log)
 
 	app.logListenerId = app.AddConfigListener(func(_, after *model.Config) {
 		app.Log.ChangeLevels(utils.MloggerConfigFromLoggerConfig(&after.LogSettings))
 	})
 
+	log.Println("enable config watch")
 	app.EnableConfigWatch()
 
+	log.Println("load time zones")
 	app.LoadTimezones()
 
+	log.Println("init timezones")
 	if err := utils.InitTranslations(app.Config().LocalizationSettings); err != nil {
 		return nil, errors.Wrapf(err, "unable to load Mattermost translation files")
 	}
 
+	log.Println("add config listener")
 	app.configListenerId = app.AddConfigListener(func(_, _ *model.Config) {
 		app.configOrLicenseListener()
 
@@ -200,6 +213,7 @@ func New(options ...Option) (outApp *App, outErr error) {
 
 	})
 
+	log.Println("email rate limit")
 	if err := app.SetupInviteEmailRateLimiting(); err != nil {
 		return nil, err
 	}
@@ -208,41 +222,51 @@ func New(options ...Option) (outApp *App, outErr error) {
 
 	app.initEnterprise()
 
+	log.Println("app new store")
 	if app.newStore == nil {
+		log.Println("app new store is nil")
 		app.newStore = func() store.Store {
 			return store.NewLayeredStore(sqlstore.NewSqlSupplier(app.Config().SqlSettings, app.Metrics), app.Metrics, app.Cluster)
 		}
 	}
 
+	log.Println("html template watcher")
 	if htmlTemplateWatcher, err := utils.NewHTMLTemplateWatcher("templates"); err != nil {
 		mlog.Error(fmt.Sprintf("Failed to parse server templates %v", err))
 	} else {
 		app.htmlTemplateWatcher = htmlTemplateWatcher
 	}
 
+	log.Println("app.Srv.Store")
 	app.Srv.Store = app.newStore()
 
+	log.Println("ensure asymmetric")
 	if err := app.ensureAsymmetricSigningKey(); err != nil {
 		return nil, errors.Wrapf(err, "unable to ensure asymmetric signing key")
 	}
 
+	log.Println("ensure install date")
 	if err := app.ensureInstallationDate(); err != nil {
 		return nil, errors.Wrapf(err, "unable to ensure installation date")
 	}
 
+	log.Println("ensure diag")
 	app.EnsureDiagnosticId()
 	app.regenerateClientConfig()
 
+	log.Println("init jobs")
 	app.initJobs()
 	app.AddLicenseListener(func() {
 		app.initJobs()
 	})
 
+	log.Println("cluster")
 	app.clusterLeaderListenerId = app.AddClusterLeaderChangedListener(func() {
 		mlog.Info("Cluster leader changed. Determining if job schedulers should be running:", mlog.Bool("isLeader", app.IsLeader()))
 		app.Jobs.Schedulers.HandleClusterLeaderChange(app.IsLeader())
 	})
 
+	log.Println("sub path")
 	subpath, err := utils.GetSubpathFromConfig(app.Config())
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse SiteURL subpath")
@@ -265,6 +289,7 @@ func New(options ...Option) (outApp *App, outErr error) {
 		handlers: make(map[string]webSocketHandler),
 	}
 
+	log.Println("returning")
 	return app, nil
 }
 

@@ -7,11 +7,11 @@ import (
 	"crypto/rand"
 	"encoding/gob"
 	"encoding/hex"
-	"flag"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/c3systems/c3-go/common/c3crypto"
@@ -329,32 +329,36 @@ func buildNode(peerStr string) error {
 func main() {
 	log.Println("building node")
 
-	imageHashFlag := flag.String("image", "", "Image hash")
-	shouldSendGenesisBlock := flag.Bool("genesis", false, "send genesis block")
-	peer := flag.String("peer", "", "peer multiaddr")
-	genesisLoc := flag.String("genesisLoc", "", "location of genesis state")
-	_ = flag.Bool("shouldNotListen", false, "should the mattermost server listen")
-	flag.Parse()
+	imageHashFlag := os.Getenv("image")
+	shouldSendGenesisBlockStr := os.Getenv("genesis")
+	shouldSendGenesisBlock, err := strconv.ParseBool(shouldSendGenesisBlockStr)
+	if err != nil {
+		log.Fatalf("err parsing genesis\n%v", err)
+	}
 
-	if peer == nil || *peer == "" {
+	peer := os.Getenv("peer")
+	genesisLoc := os.Getenv("genesisLoc")
+
+	log.Printf("\n\nflags\nimage: %v\npeer: %v\ngenesisLoc: %v\nsendGenesis: %v\n\n", imageHashFlag, peer, genesisLoc, shouldSendGenesisBlock)
+	if peer == "" {
 		log.Fatal("peer command line flag is required")
 	}
-	if imageHashFlag == nil || *imageHashFlag == "" {
+	if imageHashFlag == "" {
 		log.Fatal("image command line flag is required")
 	}
-	if *shouldSendGenesisBlock && (genesisLoc == nil || *genesisLoc == "") {
+	if shouldSendGenesisBlock && genesisLoc == "" {
 		log.Fatal("a genesisLoc is required when sending a genesis block")
 	}
 
-	imageHash = *imageHashFlag
-	if err := buildNode(*peer); err != nil {
+	imageHash = imageHashFlag
+	if err := buildNode(peer); err != nil {
 		log.Fatalf("err building node\n%v", err)
 
 	}
 
-	if *shouldSendGenesisBlock {
+	if shouldSendGenesisBlock {
 		log.Println("sending genesis block")
-		if err := sendGenesisBlock(*genesisLoc); err != nil {
+		if err := sendGenesisBlock(genesisLoc); err != nil {
 			log.Fatalf("err sending genesis block\n%v", err)
 		}
 

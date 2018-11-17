@@ -26,10 +26,10 @@ $ docker build .
 $ c3-go push $(docker images -q | grep -m1 "")
 
 # send a genesis state
-$ go run cmd/c3-frontend/main.go --image=<the docker image hash from the previous step> --peer=<peer id from the previous terminal> --genesis=true --genesisLoc=./state.tar
+$ image=<docker image> peer=<c3 peer> genesis=true genesisLoc=./state.tar go run cmd/c3-frontend/main.go 
 
 # run the dApp, locally
-$ go run cmd/c3-frontend/main.go --image=<the docker image hash from two steps ago> --peer=<peer id from the previous terminal> --shouldNotListen=true
+$ image=<docker image> peer=<c3 peer> genesis=false go run cmd/c3-frontend/main.go server --shouldNotListen=true
 ```
 
 Finally navigate to `http://localhost:8065/public/channels/town-square`
