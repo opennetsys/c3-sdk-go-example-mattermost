@@ -1041,6 +1041,7 @@ func GenerateStateFromDiffs(ctx context.Context, imageHash string, genesisState 
 
 	ts := time.Now().Unix()
 	var fileNames []string
+	defer cleanupDirs(&fileNames)
 	defer cleanupFiles(&fileNames)
 
 	tmpStateFile, err := fileutil.CreateTempFile(fmt.Sprintf("%s/%v/%s", imageHash, ts, StateFileName))
@@ -1091,6 +1092,7 @@ func GenerateStateFromDiffs(ctx context.Context, imageHash string, genesisState 
 func generateCombinedDiffs(ctx context.Context, imageHash string, diffs []*statechain.Diff) ([]byte, error) {
 	ts := time.Now().Unix()
 	var fileNames []string
+	defer cleanupDirs(&fileNames)
 	defer cleanupFiles(&fileNames)
 
 	if diffs == nil || len(diffs) == 0 {
@@ -1359,9 +1361,31 @@ func groupStateBlocksByImageHash(stateBlocksMap map[string]*statechain.Block) (m
 	return ret, nil
 }
 
-func cleanupFiles(fileNames *[]string) {
-	err := fileutil.RemoveFiles(fileNames)
-	if err != nil {
-		log.Errorf("[miner] err cleaning up files; %v", err)
+func cleanupFiles(fileNames *[]string) error {
+	if fileNames == nil {
+		log.Info("no files to remove")
+		return nil
 	}
+
+	if err := fileutil.RemoveFiles(*fileNames); err != nil {
+		log.Errorf("[miner] err cleaning up files; %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func cleanupDirs(fileNames *[]string) error {
+	if fileNames == nil {
+		log.Info("no files to remove")
+		return nil
+	}
+
+	dirs := fileutil.DirsFromFiles(*fileNames)
+
+	if err := fileutil.RemoveDirs(dirs); err != nil {
+		log.Errorf("err removing dirs\n%v", err)
+	}
+
+	return nil
 }

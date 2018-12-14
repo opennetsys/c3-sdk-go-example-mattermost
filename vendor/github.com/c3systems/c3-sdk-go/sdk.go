@@ -1,7 +1,6 @@
 package sdk
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,6 +9,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/c3systems/c3-go/common/hashutil"
+	"github.com/c3systems/c3-go/common/hexutil"
 	"github.com/c3systems/c3-go/common/stringutil"
 	c3config "github.com/c3systems/c3-go/config"
 	"github.com/c3systems/c3-go/core/server"
@@ -17,8 +18,10 @@ import (
 )
 
 var (
-	// ErrMethodAlreadyRegistred ...
-	ErrMethodAlreadyRegistred = errors.New("method already registered")
+	// ErrMethodAlreadyRegistered ...
+	ErrMethodAlreadyRegistered = errors.New("method already registered")
+	// ErrMethodNotExists ...
+	ErrMethodNotExists = errors.New("method does not exist")
 )
 
 // State ...
@@ -68,11 +71,12 @@ func NewC3() *C3 {
 
 // RegisterMethod ...
 func (c3 *C3) RegisterMethod(methodName string, types []string, ifn interface{}) error {
-	if _, ok := c3.registeredMethods[methodName]; ok {
-		return ErrMethodAlreadyRegistred
+	methodNameHash := hashutil.HashToHexString([]byte(methodName))
+	if _, ok := c3.registeredMethods[methodNameHash]; ok {
+		return ErrMethodAlreadyRegistered
 	}
 
-	c3.registeredMethods[methodName] = func(args ...interface{}) error {
+	c3.registeredMethods[methodNameHash] = func(args ...interface{}) error {
 		switch v := ifn.(type) {
 		// TODO: accept arbitrary args
 		case func(string, string) error:
@@ -84,6 +88,12 @@ func (c3 *C3) RegisterMethod(methodName string, types []string, ifn interface{})
 			if !ok {
 				return errors.New("not ok")
 			}
+
+			keyBytes, _ := hexutil.DecodeString(key)
+			key = string(keyBytes)
+
+			valueBytes, _ := hexutil.DecodeString(value)
+			value = string(valueBytes)
 
 			log.Printf("[c3] executed method %s with args: %s %s", methodName, key, value)
 			err := v(key, value)
@@ -100,6 +110,12 @@ func (c3 *C3) RegisterMethod(methodName string, types []string, ifn interface{})
 			if !ok {
 				return errors.New("not ok")
 			}
+
+			keyBytes, _ := hexutil.DecodeString(key)
+			key = string(keyBytes)
+
+			valueBytes, _ := hexutil.DecodeString(value)
+			value = string(valueBytes)
 
 			log.Printf("[c3] executed method %s with args: %s %s", methodName, key, value)
 			str, err := v(key, value)
@@ -131,7 +147,7 @@ func (c3 *C3) State() *State {
 
 // Set ...
 func (s *State) Set(key, value []byte) error {
-	s.state[hex.EncodeToString(key)] = hex.EncodeToString(value)
+	s.state[hexutil.EncodeToString(key)] = hexutil.EncodeToString(value)
 	fmt.Println("setting state k/v", key, value)
 	fmt.Println("latest state:", s.state)
 
@@ -156,8 +172,8 @@ func (s *State) Set(key, value []byte) error {
 
 // Get ...
 func (s *State) Get(key []byte) ([]byte, bool) {
-	value, ok := s.state[hex.EncodeToString(key)]
-	v, err := hex.DecodeString(value)
+	value, ok := s.state[hexutil.EncodeToString(key)]
+	v, err := hexutil.DecodeString(value)
 	if err != nil {
 		return nil, false
 	}
@@ -200,8 +216,8 @@ func (c3 *C3) setInitialState() error {
 	return nil
 }
 
-// Process ...
-func (c3 *C3) Process(payload []byte) error {
+// process ...
+func (c3 *C3) process(payload []byte) error {
 	var ifcs []interface{}
 	if err := json.Unmarshal(payload, &ifcs); err != nil {
 		log.Errorf("[c3] %s", err)
@@ -248,13 +264,17 @@ func (c3 *C3) invoke(method string, params []string) error {
 		args = append(args, v)
 	}
 
-	return c3.registeredMethods[method](args...)
+	fn, ok := c3.registeredMethods[method]
+	if !ok {
+		return ErrMethodNotExists
+	}
+	return fn(args...)
 }
 
 // listen ...
 func (c3 *C3) listen() error {
 	for payload := range c3.receiver {
-		err := c3.Process(payload)
+		err := c3.process(payload)
 		if err != nil {
 			return err
 		}

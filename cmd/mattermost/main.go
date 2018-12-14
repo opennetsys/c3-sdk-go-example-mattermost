@@ -186,7 +186,7 @@ func (a *App) processReq(reqStr string) error {
 func startC3() {
 	data := &App{}
 	if err := client.RegisterMethod("processReq", []string{"string"}, data.processReq); err != nil {
-		log.Fatal(err)
+		log.Fatalf("err registering c3 method\n%v", err)
 	}
 	client.Serve()
 }

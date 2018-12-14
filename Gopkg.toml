@@ -74,9 +74,9 @@ required = [
   name = "github.com/blang/semver"
   version = "~3.5.0"
 
-#[[constraint]]
-  #name = "github.com/c3systems/c3-sdk-go"
-  #version = "0.0.6"
+[[constraint]]
+  name = "github.com/c3systems/c3-sdk-go"
+  version = "0.0.7"
 
 [[constraint]]
   name = "github.com/c3systems/c3-go"

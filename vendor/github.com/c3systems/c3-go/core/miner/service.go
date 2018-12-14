@@ -115,6 +115,11 @@ func (s Service) buildMainchainBlockAsync() error {
 
 	// 2. apply txs
 	for imageHash, transactions := range txsMap {
+		if imageHash == "" {
+			log.Println("[miner] error; image hash is empty")
+			return errors.New("image hash is required")
+		}
+
 		wg.Add(1)
 		go func(iHash string, txs []*statechain.Transaction) {
 			defer wg.Done()
@@ -477,6 +482,7 @@ func (s *Service) buildStateblocksAndDiffsFromStateAndTransactions(prevStateBloc
 		newStatechainBlocks []*statechain.Block
 		fileNames           []string
 	)
+	defer cleanupDirs(&fileNames)
 	defer cleanupFiles(&fileNames)
 
 	ts := time.Now().Unix()

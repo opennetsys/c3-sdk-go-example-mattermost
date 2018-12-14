@@ -16,8 +16,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/c3systems/c3-go/common/netutil"
 	c3config "github.com/c3systems/c3-go/config"
 	"github.com/c3systems/c3-go/core/docker"
@@ -25,6 +23,7 @@ import (
 	loghooks "github.com/c3systems/c3-go/log/hooks"
 	"github.com/c3systems/c3-go/registry/server"
 	"github.com/c3systems/c3-go/registry/util"
+	log "github.com/sirupsen/logrus"
 )
 
 // Ensure the struct implements the interface
@@ -39,6 +38,7 @@ type Registry struct {
 // Config ...
 type Config struct {
 	DockerLocalRegistryHost string
+	IPFSHost                string
 }
 
 // NewRegistry ...
@@ -56,7 +56,12 @@ func NewRegistry(config *Config) *Registry {
 		}
 	}
 
-	ipfsClient := ipfs.NewClient()
+	ipfsHost := "127.0.0.1:5001"
+	if config.IPFSHost != "" {
+		ipfsHost = config.IPFSHost
+	}
+
+	ipfsClient := ipfs.NewRemoteClient(ipfsHost)
 
 	return &Registry{
 		dockerLocalRegistryHost: dockerLocalRegistryHost,
@@ -92,6 +97,8 @@ func (registry *Registry) PushImage(reader io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	log.Printf("[registry] root dir: %s", root)
 
 	imageIpfsHash, err := registry.uploadDir(root)
 	if err != nil {
@@ -131,17 +138,21 @@ func (registry *Registry) PullImage(ipfsHash string) (string, error) {
 	log.Printf("[registry] attempting to pull %s", dockerPullImageID)
 	err := client.PullImage(dockerPullImageID)
 	if err != nil {
+		log.Printf("[registry] error pulling image %s; %v", dockerPullImageID, err)
 		return "", err
 	}
 
 	err = client.TagImage(dockerPullImageID, dockerizedHash)
 	if err != nil {
+		log.Printf("[registry] error tagging image %s; %v", dockerizedHash, err)
 		return "", err
 	}
+
 	log.Printf("[registry] tagged image as %s", dockerizedHash)
 
 	err = client.RemoveImage(dockerPullImageID)
 	if err != nil {
+		log.Printf("[registry] error removing image %s; %v", dockerPullImageID, err)
 		return "", err
 	}
 
@@ -235,15 +246,30 @@ func (registry *Registry) uploadDir(root string) (string, error) {
 		return "", err
 	}
 
+	log.Printf("[registry] upload hash %s", hash)
+
 	// get the first ref, which contains the image data
 	refs, err := registry.ipfsClient.Refs(hash, false)
 	if err != nil {
 		return "", err
 	}
 
-	firstRef := <-refs
+	var firstRef string
+	for i := 0; i < 10; i++ {
+		firstRef = <-refs
 
-	return firstRef, nil
+		if firstRef != "" {
+			return firstRef, nil
+		}
+	}
+
+	// return base hash if no refs
+	if firstRef == "" {
+		log.Fatal("NO REF")
+		return hash, nil
+	}
+
+	return "", errors.New("could not upload")
 }
 
 func ipfsShellCmd(cmdStr string) (string, string, error) {

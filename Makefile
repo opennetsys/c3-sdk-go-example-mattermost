@@ -518,8 +518,15 @@ set-state: untar-data pg-restore
 deps:
 	@echo "running dep ensure..." && \
 	dep ensure -update -v && \
-	$(MAKE) gxundo
+	$(MAKE) gxundo &&\
+	$(MAKE) deps/copy/ethereum/crypto
 
 .PHONY: gxundo
 gxundo:
 	@bash scripts/gxundo.sh vendor/
+
+.PHONY: deps/copy/ethereum/crypto
+deps/copy/ethereum/crypto:
+	@mkdir -p vendor/github.com/ethereum/go-ethereum/crypto/secp256k1 && \
+		go get github.com/ethereum/go-ethereum/crypto/secp256k1/... && \
+		cp -r "${GOPATH}/src/github.com/ethereum/go-ethereum/crypto/secp256k1/libsecp256k1" "vendor/github.com/ethereum/go-ethereum/crypto/secp256k1/"

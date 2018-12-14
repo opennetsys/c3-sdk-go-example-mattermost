@@ -19,20 +19,22 @@
 
 [[projects]]
   branch = "develop"
-  digest = "1:8d2b0806718bcfa22882babdb6d014d6ebecf89cb93e60764ac5854f5380b700"
+  digest = "1:0c03774193c2045deca740ad7f8cc8e2481b5f45b6eda0cc61ea37e0c41dc5a8"
   name = "github.com/c3systems/c3-go"
   packages = [
     "common/c3crypto",
     "common/dirutil",
+    "common/hashutil",
     "common/hexutil",
     "common/ipnsutil",
     "common/stringutil",
+    "common/txparamcoder",
     "config",
     "core/server",
     "log/hooks",
   ]
   pruneopts = "UT"
-  revision = "a728eace897e59792c1539d9af69fc37516fa8f2"
+  revision = "e8a8a872b169ecd4d915fa9a400d479ad4e5cb77"
 
 [[projects]]
   digest = "1:bbadccf3d3317ea03c0dac0b45b673b4b397c8f91a1d2eff550a3c51c4ad770e"
@@ -51,12 +53,25 @@
   revision = "d9f6b97f8db22dd1e090fd0bbbe98f09cc7dd0a8"
 
 [[projects]]
-  digest = "1:6fdf1bafcda4dda847767970e9c0e11c484b5eafa343f1a33f2921df986990b2"
-  name = "github.com/ipfs/go-ipfs"
-  packages = ["keystore"]
+  branch = "master"
+  digest = "1:02df66d8098a1087e74f74326883e1e104844f528227431c7290510fd165ced7"
+  name = "github.com/ipfs/go-ipfs-keystore"
+  packages = ["."]
   pruneopts = "UT"
-  revision = "dfd19c470e162ef906382683fd743a8571cede95"
-  version = "v0.4.17"
+  revision = "508c1e10090009fde253d4d9eb9e2c581e3781ad"
+
+[[projects]]
+  digest = "1:43248b562ac2508990699768e9e0c3d8073c2d0081a5f2dbdc5efd727d9ed426"
+  name = "github.com/ipfs/go-log"
+  packages = [
+    ".",
+    "tracer",
+    "tracer/wire",
+    "writer",
+  ]
+  pruneopts = "UT"
+  revision = "14e95105cbafcda64fdc36197fe6a30b23c693dc"
+  version = "v1.5.7"
 
 [[projects]]
   digest = "1:0a69a1c0db3591fcefb47f115b224592c8dfa4368b7ba9fae509d5e16cdc95c8"
@@ -67,14 +82,15 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:cb3d9af37f2bce4339b3b7739f5f66b219290c6821526a0a36f31d55380446d8"
+  branch = "master"
+  digest = "1:58e19b10b5f1786c258ead2ca8a08f2726dfddbc4e309f3d1b92ba302eb179a3"
   name = "github.com/libp2p/go-libp2p-crypto"
   packages = [
     ".",
     "pb",
   ]
   pruneopts = "UT"
-  revision = "7240b40a3ddc47c4d17c15baabcbe45e5219171b"
+  revision = "3120e9f9526fe05f2d3905961a5e0701b85579d9"
 
 [[projects]]
   digest = "1:d59d3f32a53e3d1ef4f19f92c8f4cbccabfae6c965760577958b2fb937fede98"
@@ -83,6 +99,22 @@
   pruneopts = "UT"
   revision = "dd9b45c0649b38aebe65f98cb460676b4214a42c"
   version = "v2.4.0"
+
+[[projects]]
+  digest = "1:c658e84ad3916da105a761660dcaeb01e63416c8ec7bc62256a9b411a05fcd67"
+  name = "github.com/mattn/go-colorable"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
+  version = "v0.0.9"
+
+[[projects]]
+  digest = "1:0981502f9816113c9c8c4ac301583841855c8cf4da8c72f696b3ebedf6d0e4e5"
+  name = "github.com/mattn/go-isatty"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
+  version = "v0.0.4"
 
 [[projects]]
   branch = "master"
@@ -125,12 +157,32 @@
   revision = "7c0f4a9b18d992166452d8cd32caaefd92b26386"
 
 [[projects]]
-  digest = "1:3f53e9e4dfbb664cd62940c9c4b65a2171c66acd0b7621a1a6b8e78513525a52"
+  digest = "1:450b7623b185031f3a456801155c8320209f75d0d4c4e633c6b1e59d44d6e392"
+  name = "github.com/opentracing/opentracing-go"
+  packages = [
+    ".",
+    "ext",
+    "log",
+  ]
+  pruneopts = "UT"
+  revision = "1949ddbfd147afd4d964a9f00b24eb291e0e7c38"
+  version = "v1.0.2"
+
+[[projects]]
+  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
+  digest = "1:69b1cc331fca23d702bd72f860c6a647afd0aa9fcbc1d0659b1365e26546dd70"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = "UT"
-  revision = "ad15b42461921f1fb3529b058c6786c6a45d5162"
-  version = "v1.1.1"
+  revision = "bcd833dfe83d3cebad139e4a29ed79cb2318bf95"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:919bb3aa6d9d0b67648c219fa4925312bc3c2872da19e818fa769e9c97a2b643"
@@ -139,6 +191,14 @@
   pruneopts = "UT"
   revision = "9f5d223c60793748f04a9d5b4b4eacddfc1f755d"
   version = "v1.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:0102dfa2f98777db8ff68c920bef1be3ff8504e90485b6cdd24d61b981b487b6"
+  name = "github.com/whyrusleeping/go-logging"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "0457bb6b88fc1973573aaf6b5145d8d3ae972390"
 
 [[projects]]
   branch = "master"
@@ -152,11 +212,19 @@
     "ssh/terminal",
   ]
   pruneopts = "UT"
-  revision = "bc7917b19d8f099105de72dc62898400be07c984"
+  revision = "e4dc69e5b2fd71dcaf8bd5d054eb936deb78d1fa"
 
 [[projects]]
   branch = "master"
-  digest = "1:dd2885ee8449be60c4c7cb8d9a21ec1b615a4449b463dbecadb16c1cedb0748d"
+  digest = "1:76ee51c3f468493aff39dbacc401e8831fbb765104cbf613b89bef01cf4bad70"
+  name = "golang.org/x/net"
+  packages = ["context"]
+  pruneopts = "UT"
+  revision = "a544f70c90f196e50d198126db0c4cb2b562fec0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:8f32f0ccb71f71d4780147c6e6fac5bcec522f148e7a0d6d4543770081e8884d"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -164,13 +232,16 @@
     "windows",
   ]
   pruneopts = "UT"
-  revision = "d69651ed3497faee15a5363a89578e9991f6d5e2"
+  revision = "66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/c3systems/c3-go/common/hashutil",
+    "github.com/c3systems/c3-go/common/hexutil",
     "github.com/c3systems/c3-go/common/stringutil",
+    "github.com/c3systems/c3-go/common/txparamcoder",
     "github.com/c3systems/c3-go/config",
     "github.com/c3systems/c3-go/core/server",
     "github.com/c3systems/c3-go/log/hooks",

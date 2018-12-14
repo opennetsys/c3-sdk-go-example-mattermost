@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"io"
@@ -276,10 +277,30 @@ func (s *Client) CreateContainer(imageID string, cmd []string, config *CreateCon
 
 // StartContainer ...
 func (s *Client) StartContainer(containerID string) error {
-	err := s.client.ContainerStart(context.Background(), containerID, types.ContainerStartOptions{})
+	err := s.client.ContainerStart(context.TODO(), containerID, types.ContainerStartOptions{})
 
 	if err != nil {
 		log.Printf("[docker] error starting container %s; %v", containerID, err)
+		return err
+	}
+
+	reader, err := s.client.ContainerLogs(context.TODO(), containerID, types.ContainerLogsOptions{
+		ShowStdout: true,
+		ShowStderr: true,
+		Follow:     true,
+	})
+
+	go func() {
+		log.Println("[docker] logging to stdout..")
+		scanner := bufio.NewScanner(reader)
+		for scanner.Scan() {
+			line := scanner.Text()
+			log.Printf("[docker] [container %s] [log] %s\n", ShortContainerID(containerID), line)
+		}
+	}()
+
+	if err != nil {
+		log.Printf("[docker] error reading container logs for %s; %v", containerID, err)
 		return err
 	}
 
