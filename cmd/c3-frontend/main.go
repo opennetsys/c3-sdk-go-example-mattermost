@@ -7,7 +7,6 @@ import (
 	"crypto/rand"
 	"encoding/gob"
 	"encoding/hex"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -163,23 +162,23 @@ func genUpgrader(n *swarm.Swarm) *tptu.Upgrader {
 
 }
 
-func sendGenesisBlock(loc string) error {
-	f, err := ioutil.ReadFile(loc)
-	if err != nil {
-		log.Printf("err reading file\n%v", err)
-		return err
-	}
+func sendGenesisBlock() error {
+	//f, err := ioutil.ReadFile()
+	//if err != nil {
+	//	log.Printf("err reading file\n%v", err)
+	//	return err
+	//}
 
-	payload := txparamcoder.ToJSONArray(
-		// txparamcoder.EncodeMethodName("processReq"),
-		txparamcoder.EncodeParam(hex.EncodeToString(f)),
-	)
+	//payload := txparamcoder.ToJSONArray(
+	// txparamcoder.EncodeMethodName("processReq"),
+	//	txparamcoder.EncodeParam(hex.EncodeToString(f)),
+	//)
 
 	ch := make(chan interface{})
 	tx := statechain.NewTransaction(&statechain.TransactionProps{
 		ImageHash: imageHash,
 		Method:    methodTypes.Deploy,
-		Payload:   payload,
+		Payload:   nil,
 		From:      pubAddr,
 	})
 
@@ -337,18 +336,18 @@ func main() {
 	}
 
 	peer := os.Getenv("peer")
-	genesisLoc := os.Getenv("genesisLoc")
+	// genesisLoc := os.Getenv("genesisLoc")
 
-	log.Printf("\n\nflags\nimage: %v\npeer: %v\ngenesisLoc: %v\nsendGenesis: %v\n\n", imageHashFlag, peer, genesisLoc, shouldSendGenesisBlock)
+	log.Printf("\n\nflags\nimage: %v\npeer: %v\nsendGenesis: %v\n\n", imageHashFlag, peer, shouldSendGenesisBlock)
 	if peer == "" {
 		log.Fatal("peer command line flag is required")
 	}
 	if imageHashFlag == "" {
 		log.Fatal("image command line flag is required")
 	}
-	if shouldSendGenesisBlock && genesisLoc == "" {
-		log.Fatal("a genesisLoc is required when sending a genesis block")
-	}
+	//if shouldSendGenesisBlock && genesisLoc == "" {
+	//log.Fatal("a genesisLoc is required when sending a genesis block")
+	//}
 
 	imageHash = imageHashFlag
 	if err := buildNode(peer); err != nil {
@@ -358,7 +357,7 @@ func main() {
 
 	if shouldSendGenesisBlock {
 		log.Println("sending genesis block")
-		if err := sendGenesisBlock(genesisLoc); err != nil {
+		if err := sendGenesisBlock(); err != nil {
 			log.Fatalf("err sending genesis block\n%v", err)
 		}
 

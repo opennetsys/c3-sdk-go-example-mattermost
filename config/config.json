@@ -407,7 +407,7 @@
         "PluginStates": {}
     },
     "DisplaySettings": {
-        "CustomUrlSchemes": null,
+        "CustomUrlSchemes": [],
         "ExperimentalTimezone": false
     },
     "TimezoneSettings": {

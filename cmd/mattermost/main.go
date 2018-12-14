@@ -58,10 +58,13 @@ func (a *App) processReq(reqStr string) error {
 	//	return err
 	//}
 	//// DONE JUST FOR TESTING
+	log.Println("running process req")
 	prevState, found := client.State().Get([]byte(key))
 	if !found {
 		return errors.New("no previous state")
 	}
+
+	log.Printf("prev state\n%s", string(prevState))
 	if err := os.Remove("./state.tar"); err != nil {
 		log.Printf("err removing prev state.tar\n%v", err)
 	}
@@ -77,7 +80,7 @@ func (a *App) processReq(reqStr string) error {
 		return err
 	}
 
-	log.Println(string(out))
+	log.Printf("set state:\n%s", string(out))
 	if err := cmd.Start(); err != nil {
 		log.Printf("err executing set-state\n%v", err)
 		return err
@@ -98,6 +101,7 @@ func (a *App) processReq(reqStr string) error {
 		log.Printf("err unmarshalling globals\n%v", err)
 		return err
 	}
+	log.Printf("global vars:\n%v", globals)
 	model.SeqUint64 = globals.SeqUint64
 	model.SeqUint64ForPresave = globals.SeqUint64ForPresave
 	model.SeqUint64ForPresaveMillis = globals.SeqUint64ForPresaveMillis
@@ -194,7 +198,7 @@ func main() {
 	}
 	i, err := strconv.Atoi(seqUint64)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("err setting seqUint64\n%v", err)
 	}
 	model.SeqUint64 = uint64(i)
 
@@ -204,7 +208,7 @@ func main() {
 	}
 	i, err = strconv.Atoi(seqUint64ForPresave)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("err setting SeqUint64ForPresave\n%v", err)
 	}
 	model.SeqUint64ForPresave = uint64(i)
 
@@ -214,7 +218,7 @@ func main() {
 	}
 	i, err = strconv.Atoi(seqUint64ForPresaveMillis)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("err setting seqUint64ForPresaveMillis\n%v", err)
 	}
 	model.SeqUint64ForPresaveMillis = uint64(i)
 
@@ -223,6 +227,6 @@ func main() {
 	log.Printf("seqUint64ForPresaveMillis is %v", seqUint64ForPresaveMillis)
 	go startC3()
 	if err := commands.Run(os.Args[1:]); err != nil {
-		os.Exit(1)
+		log.Fatalf("err running command\n%v", err)
 	}
 }

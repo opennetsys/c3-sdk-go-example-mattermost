@@ -7,7 +7,7 @@ ENV POSTGRES_URL postgres://docker:docker@localhost:5432/db?sslmode=disable
 
 RUN mkdir -p /go /go/bin /go/src /go/src/github.com/c3systems/c3-sdk-go-example-mattermost /go/pkg &&\
   apt-get update -y && apt-get upgrade -y &&\
-  apt-get install -y --no-install-recommends --fix-missing make curl python gnupg2 dirmngr golang-go build-essential ca-certificates &&\
+  apt-get install -y --no-install-recommends --fix-missing make curl python gnupg2 dirmngr golang-go build-essential ca-certificates git &&\
   apt-get autoremove -y &&\
   apt-get update -y --no-install-recommends &&\
   # Add the PostgreSQL PGP key to verify their Debian packages.
@@ -39,4 +39,4 @@ COPY . /go/src/github.com/c3systems/c3-sdk-go-example-mattermost
 RUN chmod +x /go/src/github.com/c3systems/c3-sdk-go-example-mattermost/docker-entrypoint.sh &&\
   chmod +x /go/src/github.com/c3systems/c3-sdk-go-example-mattermost/wait.sh
 
-ENTRYPOINT ["/go/src/github.com/c3systems/c3-sdk-go-example-mattermost/docker-entrypoint.sh"]
+CMD /go/src/github.com/c3systems/c3-sdk-go-example-mattermost/docker-entrypoint.sh

@@ -26,7 +26,7 @@ $ docker build .
 $ c3-go push $(docker images -q | grep -m1 "")
 
 # send a genesis state
-$ image=<docker image> peer=<c3 peer> genesis=true genesisLoc=./state.tar go run cmd/c3-frontend/main.go 
+$ image=<docker image> peer=<c3 peer> genesis=true go run cmd/c3-frontend/main.go 
 
 # run the dApp, locally
 $ image=<docker image> peer=<c3 peer> genesis=false go run cmd/c3-frontend/main.go server --shouldNotListen=true
