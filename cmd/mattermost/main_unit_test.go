@@ -12,7 +12,7 @@ func TestProcessReq(t *testing.T) {
 	t.Log("test process req")
 	app := App{}
 
-	b, err := ioutil.ReadFile("./req_file_test.txt")
+	b, err := ioutil.ReadFile("./req_bytes.txt")
 	if err != nil {
 		t.Fatalf("err reading from file\n%v", err)
 	}

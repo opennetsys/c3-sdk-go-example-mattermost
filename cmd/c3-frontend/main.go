@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"encoding/gob"
 	"encoding/hex"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -86,9 +87,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				http.StatusInternalServerError)
 		}
 
+		reqHexStr := hex.EncodeToString(b.Bytes())
+		if err := ioutil.WriteFile("./req_bytes.txt", []byte(reqHexStr), 0644); err != nil {
+			log.Fatalf("err writing req bytes to file\n%v", err)
+		}
+
 		payload := txparamcoder.ToJSONArray(
 			txparamcoder.EncodeMethodName("processReq"),
-			txparamcoder.EncodeParam(hex.EncodeToString(b.Bytes())),
+			txparamcoder.EncodeParam(reqHexStr),
 		)
 
 		tx := statechain.NewTransaction(&statechain.TransactionProps{

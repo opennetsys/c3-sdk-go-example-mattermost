@@ -6,11 +6,14 @@ package main
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"strconv"
@@ -45,18 +48,18 @@ const (
 type App struct {
 }
 
-func (a *App) processReq(reqStr string) error {
+func (a *App) processReq(reqStrHex string) error {
 	//// JUST FOR TESTING
-	//stateBytes1, err := ioutil.ReadFile("./state.tar")
-	//if err != nil {
-	//	log.Printf("err reading state tar file\n%v", err)
-	//	return err
-	//}
+	stateBytes1, err := ioutil.ReadFile("./state.tar")
+	if err != nil {
+		log.Printf("err reading state tar file\n%v", err)
+		return err
+	}
 
-	//if err := client.State().Set([]byte(key), stateBytes1); err != nil {
-	//	log.Printf("err setting client state\n%v", err)
-	//	return err
-	//}
+	if err := client.State().Set([]byte(key), stateBytes1); err != nil {
+		log.Printf("err setting client state\n%v", err)
+		return err
+	}
 	//// DONE JUST FOR TESTING
 	log.Println("running process req")
 	prevState, found := client.State().Get([]byte(key))
@@ -81,17 +84,17 @@ func (a *App) processReq(reqStr string) error {
 	}
 
 	log.Printf("set state:\n%s", string(out))
-	if err := cmd.Start(); err != nil {
-		log.Printf("err executing set-state\n%v", err)
-		return err
-	}
+	//if err := cmd.Start(); err != nil {
+	//log.Printf("err executing set-state\n%v", err)
+	//return err
+	//}
 
-	if err := cmd.Wait(); err != nil {
-		log.Printf("err waiting on set-state\n%v", err)
-		return err
-	}
+	//if err := cmd.Wait(); err != nil {
+	//log.Printf("err waiting on set-state\n%v", err)
+	//return err
+	//}
 
-	globalBytes, err := ioutil.ReadFile("./../../data/globals/globals.json")
+	globalBytes, err := ioutil.ReadFile("./data/globals/globals.json")
 	if err != nil {
 		log.Printf("err reading global vars file\n%v", err)
 		return err
@@ -106,6 +109,10 @@ func (a *App) processReq(reqStr string) error {
 	model.SeqUint64ForPresave = globals.SeqUint64ForPresave
 	model.SeqUint64ForPresaveMillis = globals.SeqUint64ForPresaveMillis
 
+	reqStr, err := hex.DecodeString(reqStrHex)
+	if err != nil {
+		log.Fatalf("error decoding input; %v", err)
+	}
 	b := []byte(reqStr)
 	reqBytes := bytes.NewBuffer(b)
 	dec := gob.NewDecoder(reqBytes)
@@ -121,6 +128,16 @@ func (a *App) processReq(reqStr string) error {
 		log.Printf("err untransforming request\n%v", err)
 		return err
 	}
+	log.Printf("untransformed req\n%v", req)
+	log.Println(req.URL.Scheme, req.Host)
+	rawQ := req.URL.RawQuery
+	req.URL, err = url.Parse(fmt.Sprintf("http://%s%s", req.Host, req.URL.Path))
+	if err != nil {
+		log.Printf("err parsing url\n%v", err)
+		return err
+	}
+	req.URL.RawQuery = rawQ
+	log.Println(req.URL)
 
 	httpClient := http.Client{
 		Timeout: time.Duration(10 * time.Second),
@@ -132,13 +149,14 @@ func (a *App) processReq(reqStr string) error {
 		return err
 	}
 
+	log.Printf("sent req, status code %d", resp.StatusCode)
 	if resp.StatusCode != 200 {
 		log.Printf("received non 200 status code\n%v", resp)
 		return err
 	}
 
 	// write the globals to disk
-	if err = os.Remove("./../../data/globals/globals.json"); err != nil {
+	if err = os.Remove("./data/globals/globals.json"); err != nil {
 		log.Printf("err removing old globals file\n%v", err)
 	}
 	globals = utils.Globals{
@@ -151,11 +169,12 @@ func (a *App) processReq(reqStr string) error {
 		log.Printf("err marshaling globals\n%v", err)
 		return err
 	}
-	if err = ioutil.WriteFile("./../../data/globals/globals.json", d, 0644); err != nil {
+	if err = ioutil.WriteFile("./data/globals/globals.json", d, 0644); err != nil {
 		log.Printf("err writing globals file\n%v", err)
 		return err
 	}
 
+	log.Println("getting state")
 	cmd = exec.Command("/bin/sh", "./get_state.sh")
 	out, err = cmd.CombinedOutput()
 	if err != nil {
@@ -163,7 +182,7 @@ func (a *App) processReq(reqStr string) error {
 		return err
 	}
 
-	log.Println(string(out))
+	log.Printf("get state out\n%s", string(out))
 	//if err = cmd.Start(); err != nil {
 	//	log.Printf("err getting state\n%v", err)
 	//	return err
@@ -174,6 +193,7 @@ func (a *App) processReq(reqStr string) error {
 	//	return err
 	//}
 
+	log.Println("reading tar")
 	stateBytes, err := ioutil.ReadFile("./state.tar")
 	if err != nil {
 		log.Printf("err reading state tar file\n%v", err)
@@ -184,11 +204,12 @@ func (a *App) processReq(reqStr string) error {
 }
 
 func startC3() {
+	log.Println("in startC3")
 	data := &App{}
 	if err := client.RegisterMethod("processReq", []string{"string"}, data.processReq); err != nil {
 		log.Fatalf("err registering c3 method\n%v", err)
 	}
-	client.Serve()
+	go client.Serve()
 }
 
 func main() {
@@ -225,7 +246,7 @@ func main() {
 	log.Printf("seqUint64 is %v", seqUint64)
 	log.Printf("seqUint64ForPresave is %v", seqUint64ForPresave)
 	log.Printf("seqUint64ForPresaveMillis is %v", seqUint64ForPresaveMillis)
-	go startC3()
+	startC3()
 	if err := commands.Run(os.Args[1:]); err != nil {
 		log.Fatalf("err running command\n%v", err)
 	}
