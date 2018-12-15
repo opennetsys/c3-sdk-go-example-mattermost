@@ -50,16 +50,16 @@ type App struct {
 
 func (a *App) processReq(reqStrHex string) error {
 	//// JUST FOR TESTING
-	stateBytes1, err := ioutil.ReadFile("./state.tar")
-	if err != nil {
-		log.Printf("err reading state tar file\n%v", err)
-		return err
-	}
+	//stateBytes1, err := ioutil.ReadFile("./state.tar")
+	//if err != nil {
+	//log.Printf("err reading state tar file\n%v", err)
+	//return err
+	//}
 
-	if err := client.State().Set([]byte(key), stateBytes1); err != nil {
-		log.Printf("err setting client state\n%v", err)
-		return err
-	}
+	//if err := client.State().Set([]byte(key), stateBytes1); err != nil {
+	//log.Printf("err setting client state\n%v", err)
+	//return err
+	//}
 	//// DONE JUST FOR TESTING
 	log.Println("running process req")
 	prevState, found := client.State().Get([]byte(key))
