@@ -12,11 +12,11 @@ RUN mkdir -p /go /go/bin /go/src /go/src/github.com/c3systems/c3-sdk-go-example-
   apt-get update -y --no-install-recommends &&\
   # Add the PostgreSQL PGP key to verify their Debian packages.
   # It should be the same key as https://www.postgresql.org/media/keys/ACCC4CF8.asc
-  ( apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 \
-  || apt-key adv --keyserver pgp.mit.edu --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 \
-  || apt-key adv --keyserver keyserver.pgp.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 ) &&\
+  ( apt-key adv --keyserver ha.pool.sks-keyservers.net:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 \
+  || apt-key adv --keyserver pgp.mit.edu:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 \
+  || apt-key adv --keyserver keyserver.pgp.com:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 ) &&\
   echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list &&\
-  apt-get update -y --no-install-recommends && apt-get install -y --no-install-recommends postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3 &&\
+  apt-get update -y --no-install-recommends && apt-get install -y --no-install-recommends --allow-unauthenticated postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3 &&\
   # Adjust PostgreSQL configuration so that remote connections to the
   # database are possible.
   # And add ``listen_addresses`` to ``/etc/postgresql/9.3/main/postgresql.conf``
